@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miles' Synth</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <!-- favicon -->
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+</head>
+<body>
+    <h1>Miles' Synth</h1>
+    <!--section for playback controls-->
+    <section class="playback-controls">
+        <button class="button" id="play">▶</button>
+        <button class="reset" id="reset">new</button>
+        <!-- bpm number field -->
+        <input type="number" id="bpm" value="120" min="60" max="240">
+        <p>BPM</p>
+        
+        <!-- time signature field 3/4 / 4/4 -->
+        <!-- <select id="time-signature">
+            <option value="3/4">3/4</option>
+            <option value="4/4" selected>4/4</option>
+        </select>
+
+        <p>Time</p> -->
+    </section>
+
+    <!-- grid of 8 sequence buttons (2 bars) -->
+    <section class="sequencer">
+        <div class="drum-control">
+            <p>Kick</p>
+        </div>
+        <!-- mute button -->
+        <section class="sequence">
+            <button class="button" id="button-0"></button>
+            <button class="button" id="button-1"></button>
+            <button class="button" id="button-2"></button>
+            <button class="button" id="button-3"></button>
+            <button class="button" id="button-4"></button>
+            <button class="button" id="button-5"></button>
+            <button class="button" id="button-6"></button>
+            <button class="button" id="button-7"></button>
+        </section>
+        <div class="drum-control">
+            <p>Snare</p>
+        </div>
+        <section class="sequence">
+            <button class="button" id="button-0"></button>
+            <button class="button" id="button-1"></button>
+            <button class="button" id="button-2"></button>
+            <button class="button" id="button-3"></button>
+            <button class="button" id="button-4"></button>
+            <button class="button" id="button-5"></button>
+            <button class="button" id="button-6"></button>
+            <button class="button" id="button-7"></button>
+        </section>
+        <div class="drum-control">
+            <p>Hi-Hat</p>
+        </div>
+        <section class="sequence">
+            <button class="button" id="button-0"></button>
+            <button class="button" id="button-1"></button>
+            <button class="button" id="button-2"></button>
+            <button class="button" id="button-3"></button>
+            <button class="button" id="button-4"></button>
+            <button class="button" id="button-5"></button>
+            <button class="button" id="button-6"></button>
+            <button class="button" id="button-7"></button>
+        </section>
+        <div class="drum-control">
+            <p>Tom</p>
+        </div>
+        <section class="sequence">
+            <button class="button" id="button-0"></button>
+            <button class="button" id="button-1"></button>
+            <button class="button" id="button-2"></button>
+            <button class="button" id="button-3"></button>
+            <button class="button" id="button-4"></button>
+            <button class="button" id="button-5"></button>
+            <button class="button" id="button-6"></button>
+            <button class="button" id="button-7"></button>
+        </section>
+    </section>
+
+    <!-- get js  -->
+    <script src="assets/sequencer.js"></script>
+
+</body>
+</html>
+
+

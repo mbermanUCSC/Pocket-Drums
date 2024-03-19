@@ -1,0 +1,163 @@
+
+
+/* background for page */
+body {
+    background-color: #3e6249;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+    font-family: 'VT323', monospace;
+    color: #e7e571;
+    text-align: center;
+    margin-top: 20px;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #00000063;
+}
+
+.playback-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #723a7aa6;
+    border: 3px solid #757d65;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 0 10px 5px #000000cc;
+}
+
+/* playback button */
+.playback-controls button {
+    background-color: #989898;
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+/* playback button hover */
+.playback-controls button:hover {
+    background-color: #6a6a6a;
+    scale: 1.12;
+}
+
+/* number field */
+.playback-controls input[type="number"] {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
+    font-size: 20px;
+    text-align: center;
+    background-color: #b5b385;
+    margin-left: 300px;
+
+    /* retro font */
+    font-family: 'VT323', monospace;
+}
+
+.playback-controls p{
+    font-size: 20px;
+    margin: 5px;
+    font-family: 'VT323', monospace;
+    color: black;
+}
+
+
+/* time signature */
+.playback-controls select {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
+    font-size: 20px;
+    text-align: center;
+    background-color: #bdbdbd;
+}
+
+
+.sequencer {
+    background-color: #736023a6;
+    border: 3px solid #4f3737;
+    padding: 10px;
+    border-radius: 10px;
+    /* shadow */
+    box-shadow: 0 0 10px 5px #000000;
+}
+
+.drum-control {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin-bottom: 10px;
+}
+
+.drum-control .mute-button {
+    background-color: #989898;
+    color: #494237;
+    border: none;
+    padding: 2px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 15px;
+    font-family: 'VT323', monospace;
+    margin-left: 10px;
+}
+
+/* drum button hover */
+.drum-control button:hover {
+    background-color: #6a6a6a;
+    scale: 1.12;
+}
+
+.drum-control p {
+    font-size: 16px;
+    font-family: 'VT323', monospace;
+    color: black;
+}
+
+
+/* sequence */
+.sequence {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #aa903aa6;
+    border: 3px solid #4f3737;
+    border-radius: 5px;
+    padding: 10px;
+    /* locked width */
+    height: 100px;
+    /* shadow */
+    box-shadow: 0 0 10px 5px #00000090;
+}
+
+/* make sure the buttons fill ethe sequence */
+.sequence .button {
+    flex: 1;
+    height: 80%;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+
+.button-active {
+    background-color: #4CAF50; /* Green background to indicate active/pressed */
+}
+
+.current-beat {
+    /* Example styling for the current beat */
+    border: 2px solid #FFD700; /* Gold border */
+}
+
+
