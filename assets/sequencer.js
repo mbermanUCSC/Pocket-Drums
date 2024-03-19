@@ -8,8 +8,16 @@ document.addEventListener('DOMContentLoaded', function () {
     let timer;
     let interval = calculateInterval();
 
-    let muteState = { kick: false, snare: false, hiHat: false, tom: false };
     
+    // stop audio context when the window is closed or not focused
+    window.addEventListener('blur', function() {
+        audioCtx.suspend();
+    });
+
+    // start audio context when the window is focused
+    window.addEventListener('focus', function() {
+        audioCtx.resume();
+    });
 
     sequences.forEach(sequence => {
         sequence.querySelectorAll('button').forEach(button => {
