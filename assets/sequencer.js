@@ -176,6 +176,10 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.add-sample-button').forEach(button => {
                 button.textContent = 'file';
             });
+
+            // clear the synth keys
+            keys = [];
+            resetActiveKeys();
         });
     });
 
