@@ -116,7 +116,7 @@ h1 {
     /* extra stylin */
     margin-left: 10%;
     margin-right: 10px;
-    
+    cursor: pointer;
 }
 
 .playback-controls p{
@@ -240,6 +240,9 @@ h1 {
     height: 80%;
     margin: 5px;
     border-radius: 5px;
+    /* cool styling */
+    border : 8px solid #47594e57;
+    cursor: pointer;
 }
 
 
