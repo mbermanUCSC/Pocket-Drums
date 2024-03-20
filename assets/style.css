@@ -146,6 +146,8 @@ h1 {
     height: 100px;
     /* shadow */
     box-shadow: 0 0 10px 5px #00000090;
+    /* keep content on screen */
+    max-width: 100%;
 }
 
 /* make sure the buttons fill ethe sequence */
