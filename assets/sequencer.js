@@ -66,13 +66,16 @@ document.addEventListener('DOMContentLoaded', function () {
         gainNode.connect(audioCtx.destination);
 
         oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        oscillator.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
 
         gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
 
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.5);
+
+        gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime + 0.45);
+        gainNode.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
     }
 
     function playSnare() {
