@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
             samples = {};
             // clear the sample buttons
             document.querySelectorAll('.add-sample-button').forEach(button => {
-                button.textContent = 'Add sample';
+                button.textContent = 'file';
             });
         });
     });
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }, error => {
                         console.error("Error decoding audio data: ", error);
                         // Reset the button + give the user a message
-                        currentButton.textContent = 'Add sample';
+                        currentButton.textContent = 'file';
                         alert('Error decoding audio data. Please try a different file.');
                     });
                 };
