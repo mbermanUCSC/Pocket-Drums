@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let requestID;
     let bpmLocked = false;
 
+    let samples = {};
+    let activeSources = [];
+    let currentDrumType = null;
+
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
     masterGain.connect(audioCtx.destination);
@@ -21,6 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
     
 
     function playSound(sound, time) {
+        // check if sound is in samples
+        if (samples[sound]) {
+            playSample(samples[sound], time);
+            return;
+        }
         if (sound === "kick") playKick(time);
         else if (sound === "snare") playSnare(time);
         else if (sound === "hihat") playHiHat(time);
@@ -105,6 +114,22 @@ document.addEventListener('DOMContentLoaded', function () {
             sequence.querySelectorAll('button').forEach(button => {
                 button.classList.remove('button-active');
             });
+            // clear bpm
+            bpmInput.value = 120;
+            document.getElementById('bpm-lock').checked = false;
+
+            // clear division
+            document.getElementById('division').checked = false;
+
+            // clear any current sound in the buffer (dont close the audio context)
+            activeSources.forEach(source => {
+                source.stop();
+            });
+            activeSources = [];
+
+            // clear the sample name
+
+
         });
     });
 
@@ -209,6 +234,42 @@ document.addEventListener('DOMContentLoaded', function () {
         bpmInput.disabled = this.checked;
         bpmLocked = this.checked;
     });
+
+    // checkbox for division
+    document.getElementById('division').addEventListener('change', function() {
+        division = this.checked ? 4 : 2;
+    });
+
+
+
+    document.querySelectorAll('.add-sample-button').forEach(button => {
+        button.addEventListener('click', function() {
+            let currentButton = this;
+            currentDrumType = Array.from(this.classList).find(cls => cls !== 'add-sample-button');
+            
+            // Create and trigger the file input
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'audio/*';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                currentButton.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = fileEvent => {
+                    const arrayBuffer = fileEvent.target.result;
+                    audioCtx.decodeAudioData(arrayBuffer, decodedData => {
+                        // Store the decoded buffer with the current drum type as the key
+                        samples[currentDrumType] = decodedData;
+                    }, error => {
+                        console.error("Error decoding audio data: ", error);
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            };
+            input.click();
+        });
+    });
+
     
 
 
@@ -337,10 +398,22 @@ document.addEventListener('DOMContentLoaded', function () {
         gainNode.gain.setValueAtTime(0.01, time + 0.4);
         gainNode.gain.linearRampToValueAtTime(0.001, time + 0.45); // Smooth fade out to prevent clicking
     }
+
+    function playSample(buffer, time) {
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(masterGain); 
+        source.start(time);
     
-    // checkbox for division
-    document.getElementById('division').addEventListener('change', function() {
-        division = this.checked ? 4 : 2;
-    });
+        activeSources.push(source);
+    
+        source.onended = function() {
+            activeSources = activeSources.filter(s => s !== source);
+        };
+    }
+    
+    
+    
+    
 
 });
