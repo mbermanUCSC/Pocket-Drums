@@ -295,38 +295,18 @@ document.addEventListener('DOMContentLoaded', function () {
         let gainNode = audioCtx.createGain();
     
         oscillator.connect(gainNode);
-        gainNode.connect(masterGain); // Connect to masterGain instead of directly to the destination
+        gainNode.connect(masterGain); 
     
-        oscillator.frequency.setValueAtTime(150, time); // Initial frequency for the thump
-        oscillator.frequency.exponentialRampToValueAtTime(0.01, time + 0.2); // Rapid pitch drop for the kick sound
+        oscillator.frequency.setValueAtTime(150, time); // initial frequency
+        oscillator.frequency.exponentialRampToValueAtTime(0.01, time + 0.2); // rapid pitch drop for the kick sound
     
         gainNode.gain.setValueAtTime(1, time); // Start at full volume
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.45); // Fade out to prevent clicking sound
+        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.45); 
     
-        oscillator.start(time);
-        oscillator.stop(time + 0.5); // Stop oscillator after the sound has fully decayed
-    
-        // Additional line for smoother ending (optional, remove if not necessary)
-        gainNode.gain.setValueAtTime(0.01, time + 0.45);
-        gainNode.gain.linearRampToValueAtTime(0.001, time + 0.5);
-    }
-
-    // Example adjustment for playKick to accept a time parameter
-    function playKick2(time) {
-        let oscillator = audioCtx.createOscillator();
-        let gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(masterGain);
-
-        oscillator.frequency.setValueAtTime(150, time);
-        oscillator.frequency.exponentialRampToValueAtTime(0.01, time + 0.2);
-
-        gainNode.gain.setValueAtTime(1, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
-
         oscillator.start(time);
         oscillator.stop(time + 0.5);
-
+    
+        // Addition for smoother ending (may not need)
         gainNode.gain.setValueAtTime(0.01, time + 0.45);
         gainNode.gain.linearRampToValueAtTime(0.001, time + 0.5);
     }
@@ -336,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
         let output = noiseBuffer.getChannelData(0);
         for (let i = 0; i < output.length; i++) {
-            output[i] = Math.random() * 2 - 1; // Fill buffer with white noise
+            output[i] = Math.random() * 2 - 1; // fill buffer with white noise
         }
         
         let noise = audioCtx.createBufferSource();
@@ -358,7 +338,6 @@ document.addEventListener('DOMContentLoaded', function () {
         noise.stop(time + 0.2);
     }
     
-
     function playHiHat(time) {
         let highPassFilter = audioCtx.createBiquadFilter();
         highPassFilter.type = 'highpass';
@@ -370,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let output = buffer.getChannelData(0);
     
         for (let i = 0; i < bufferSize; i++) {
-            output[i] = Math.random() * 2 - 1; // Generate white noise
+            output[i] = Math.random() * 2 - 1; // white noise
         }
     
         whiteNoise.buffer = buffer;
@@ -382,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
         gainNode.connect(masterGain); 
     
         gainNode.gain.setValueAtTime(1, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.05); // Quick decay for the sharp "hit" sound
+        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.05); // quick decay for the sharp "hit" sound
     
         whiteNoise.start(time);
         whiteNoise.stop(time + 0.05);
@@ -394,22 +373,22 @@ document.addEventListener('DOMContentLoaded', function () {
     
         let lowpassFilter = audioCtx.createBiquadFilter();
         lowpassFilter.type = "lowpass";
-        lowpassFilter.frequency.value = 800; // Adjust for desired tom "body" resonance
+        lowpassFilter.frequency.value = 800; // tom "body" resonance
     
         oscillator.connect(lowpassFilter);
         lowpassFilter.connect(gainNode);
         gainNode.connect(masterGain);
-        oscillator.frequency.setValueAtTime(120, time); // Start frequency
-        oscillator.frequency.exponentialRampToValueAtTime(80, time + 0.2); // End frequency for pitch drop
+        oscillator.frequency.setValueAtTime(120, time); // start frequency
+        oscillator.frequency.exponentialRampToValueAtTime(80, time + 0.2); // end frequency for pitch drop
     
         gainNode.gain.setValueAtTime(1, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.4); // Volume decay
+        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.4); // volume decay
     
         oscillator.start(time);
-        oscillator.stop(time + 0.45); // Ensure the oscillator stops after the sound has decayed
+        oscillator.stop(time + 0.45); 
     
         gainNode.gain.setValueAtTime(0.01, time + 0.4);
-        gainNode.gain.linearRampToValueAtTime(0.001, time + 0.45); // Smooth fade out to prevent clicking
+        gainNode.gain.linearRampToValueAtTime(0.001, time + 0.45); // smooth fade out to prevent clicking
     }
 
     function playBell(time) {
@@ -441,10 +420,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         gainNode.gain.setValueAtTime(0.01, time + 1);
         gainNode.gain.linearRampToValueAtTime(0.001, time + 1.1);
-
-
     }
-    
     
     function playSample(buffer, time) {
         const source = audioCtx.createBufferSource();
@@ -458,9 +434,5 @@ document.addEventListener('DOMContentLoaded', function () {
             activeSources = activeSources.filter(s => s !== source);
         };
     }
-    
-    
-    
-    
 
 });
