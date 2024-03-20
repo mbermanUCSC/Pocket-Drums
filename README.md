@@ -18,7 +18,7 @@ The synth was developed to meet specific criteria for CMPM 150:
 
 ### Running the Synthesizer
 
-To start using the synth, simply visit [the site](https://mbermanucsc.github.io/Miles-Synth/). The synthesizer will load automatically in your browser, requiring no additional installation.
+To start using the synth, simply visit [the site](https://mbermanucsc.github.io/Pocket-Drums/). The synthesizer will load automatically in your browser, requiring no additional installation.
 
 ### Controls
 
