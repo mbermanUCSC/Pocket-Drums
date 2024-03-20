@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function startSequencer() {
         isPlaying = true;
-        playButton.textContent = '⏸';
+        playButton.textContent = '▐▐ '
         moveNextBeat();
         timer = setInterval(moveNextBeat, interval);
     }
