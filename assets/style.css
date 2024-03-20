@@ -26,10 +26,9 @@ h1 {
     background-color: #723a7aa6;
     border: 3px solid #757d65;
     border-radius: 5px;
-    padding: 10px;
     box-shadow: 0 0 10px 5px #000000cc;
-    /* keep buttons in frame */
-    width: 100%;
+    /* keep content on screen */
+    overflow: hidden;
 }
 
 /* playback button */
@@ -38,10 +37,13 @@ h1 {
     color: #ffffff;
     border: none;
     padding: 10px;
-    margin: 5px;
+    margin: 4px;
     cursor: pointer;
     border-radius: 5px;
     font-size: 20px;
+    font-family: 'VT323', monospace;
+    /* fixed size */
+    width: 60px;
 }
 
 /* playback button hover */
@@ -59,10 +61,12 @@ h1 {
     font-size: 20px;
     text-align: center;
     background-color: #b5b385;
-    margin-left: 300px;
+    margin-left: 40%;
 
-    /* retro font */
     font-family: 'VT323', monospace;
+    box-shadow: 0 0 10px 5px #0000003b;
+    width: 100px;
+    
 }
 
 .playback-controls p{
