@@ -14,8 +14,6 @@ The synth was developed to meet specific criteria for CMPM 150:
 - **Responds to Input:** Offers controls to start, stop, and modify sound parameters in real time.
 - **Non-Trivial:** Features at least 3 operators for sound generation (kicks, snares, hi-hats, and tom), surpassing the complexity of generating a single sine wave tone.
 
-### Synthesis Technique
-
 ### Running the Synthesizer
 
 To start using the synth, simply visit [the site](https://mbermanucsc.github.io/Pocket-Drums/). The synthesizer will load automatically in your browser, requiring no additional installation.
