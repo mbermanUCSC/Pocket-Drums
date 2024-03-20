@@ -149,7 +149,7 @@ h1 {
 }
 
 /* make sure the buttons fill ethe sequence */
-.sequence .button {
+.sequence button {
     flex: 1;
     height: 80%;
     margin: 5px;

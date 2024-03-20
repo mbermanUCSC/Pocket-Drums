@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const playButton = document.getElementById('play');
     const bpmInput = document.getElementById('bpm');
+    const shuffleButton = document.getElementById('shuffle');
     const sequences = document.querySelectorAll('.sequence');
     let isPlaying = false;
     let currentBeat = -1; // Start at -1 to handle initial increment
@@ -37,10 +38,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     bpmInput.addEventListener('input', function() {
-        interval = calculateInterval();
-        if (isPlaying) {
-            restartSequencer(); // Restart the sequencer with the new BPM
+        if (bpmInput.value < 1) {
+            stopSequencer();
         }
+        else{
+            interval = calculateInterval();
+            restartSequencer();
+        }
+        
+
     });
 
     // reset button
@@ -51,6 +57,45 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    // shuffle button
+    shuffleButton.addEventListener('click', shuffle);
+    
+
+
+    function shuffle() {
+        sequences.forEach(sequence => {
+            sequence.querySelectorAll('button').forEach(button => {
+                // if is hi hat (check class = 'hat')
+                if (button.classList.contains('hat')) {
+                    if (Math.random() > 0.6) {
+                        button.classList.add('button-active');
+                    } else {
+                        button.classList.remove('button-active');
+                    }
+                }
+                else if (button.classList.contains('tom')) {
+                    if (Math.random() > 0.9) {
+                        button.classList.add('button-active');
+                    } else {
+                        button.classList.remove('button-active');
+                    }
+                }
+                else {
+                    if (Math.random() > 0.8) {
+                        button.classList.add('button-active');
+                    } else {
+                        button.classList.remove('button-active');
+                    }
+                }
+            }
+            );
+            
+        });
+    }
+
+                
+    
 
     function calculateInterval() {
         const bpm = parseInt(bpmInput.value);
@@ -137,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function () {
         let oscillator = audioCtx.createOscillator();
         let gainNode = audioCtx.createGain();
     
-        // Use a lowpass filter to simulate the drum body resonance
         let lowpassFilter = audioCtx.createBiquadFilter();
         lowpassFilter.type = "lowpass";
         lowpassFilter.frequency.value = 800; // Adjust for desired tom "body" resonance
@@ -147,20 +191,22 @@ document.addEventListener('DOMContentLoaded', function () {
         lowpassFilter.connect(gainNode);
         gainNode.connect(audioCtx.destination);
     
-        // Set initial frequency for tom - adjust based on desired tom pitch
-        let startFrequency = 120; // Example starting frequency for a tom sound
-        let endFrequency = 80; // End frequency after the pitch drop
+        let startFrequency = 120; 
+        let endFrequency = 80; 
         oscillator.frequency.setValueAtTime(startFrequency, audioCtx.currentTime);
-        // Slight pitch drop to mimic the natural behavior of a tom drum
-        oscillator.frequency.exponentialRampToValueAtTime(endFrequency, audioCtx.currentTime + 0.5);
+
+        oscillator.frequency.exponentialRampToValueAtTime(endFrequency, audioCtx.currentTime + 0.2);
     
-        // Set the amplitude envelope for the tom
         gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
     
         oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.5); // Stop oscillator after 0.5 seconds
+        oscillator.stop(audioCtx.currentTime + 0.45);
+
+        gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        gainNode.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
     }
+    
     
 
     function startSequencer() {
@@ -182,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function moveNextBeat() {
-        currentBeat = (currentBeat + 1) % 8;
+        currentBeat = (currentBeat + 1) % 16;
 
         sequences.forEach((sequence, seqIndex) => {
             const buttons = sequence.querySelectorAll('button');
