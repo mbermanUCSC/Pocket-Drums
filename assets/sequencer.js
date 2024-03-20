@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (sound === "snare") playSnare(time);
         else if (sound === "hihat") playHiHat(time);
         else if (sound === "tom") playTom(time);
+        else if (sound === "bell") playBell(time);
     }
 
     // highlight the current beat
@@ -411,6 +412,40 @@ document.addEventListener('DOMContentLoaded', function () {
         gainNode.gain.linearRampToValueAtTime(0.001, time + 0.45); // Smooth fade out to prevent clicking
     }
 
+    function playBell(time) {
+        // 90s drum machine sound effect
+        let oscillator = audioCtx.createOscillator();
+        let gainNode = audioCtx.createGain();
+        let highpassFilter = audioCtx.createBiquadFilter();
+        let lowpassFilter = audioCtx.createBiquadFilter();
+
+        highpassFilter.type = 'highpass';
+        highpassFilter.frequency.value = 1000;
+
+        lowpassFilter.type = 'lowpass';
+        lowpassFilter.frequency.value = 1000;
+
+        oscillator.connect(highpassFilter);
+        highpassFilter.connect(lowpassFilter);
+        lowpassFilter.connect(gainNode);
+        gainNode.connect(masterGain);
+        
+        oscillator.frequency.setValueAtTime(500, time);
+        oscillator.frequency.exponentialRampToValueAtTime(100, time + 1);
+
+        gainNode.gain.setValueAtTime(0.1, time);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 1);
+
+        oscillator.start(time);
+        oscillator.stop(time + 1);
+
+        gainNode.gain.setValueAtTime(0.01, time + 1);
+        gainNode.gain.linearRampToValueAtTime(0.001, time + 1.1);
+
+
+    }
+    
+    
     function playSample(buffer, time) {
         const source = audioCtx.createBufferSource();
         source.buffer = buffer;
