@@ -173,6 +173,130 @@ h1 {
     box-shadow: 0 0 10px 5px #000000;
 }
 
+.synth {
+    background-color: #736023a6;
+    border: 3px solid #4f3737;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 5px #000000;
+    display: none;
+}
+
+.synth .synth-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #aa903aa6;
+    border: 3px solid #4f3737;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 5px #0000003b;
+    /* keep content on screen */
+    overflow: hidden;
+    padding-left: 50px;
+}
+
+
+.synth-control .key {
+    background-color: #989898;
+    color: #494237;
+    border: none;
+    padding: 10px;
+    margin: 4px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 20px;
+    font-family: 'VT323', monospace;
+    /* fixed size */
+    width: 60px;
+    height: 90px;
+}
+
+.synth-control .black-key {
+    background-color: #494237;
+    color: #989898;
+    border: none;
+    padding: 10px;
+    margin: 4px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 20px;
+    font-family: 'VT323', monospace;
+    /* fixed size */
+    width: 60px;
+    height: 85px;
+
+    margin-top: -5px;
+    box-shadow: 0 0 10px 5px #0000003b;
+}
+
+.synth-control .key:hover, .synth-control .black-key:hover {
+    background-color: #b1b1b1;
+    scale: 1.02;
+}
+
+
+.synth-control .key.button-active, .synth-control .black-key.button-active {
+    background-color: #4CAF50; /* Example active color, adjust as needed */
+}
+
+
+/* synth image */
+.synth img {
+    width: 6%;
+    padding: 10px;
+    background-color: #934296be;
+    border: 3px solid #897629d0;
+    border-radius: 8px;
+    box-shadow: 0 0 10px 5px #0000003b;
+    margin: 5px;
+    padding-top: 10px;
+}
+
+.synth img:hover {
+    background-color: #e0e01341;
+    scale: 1.12;
+}
+
+
+.nav-bar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
+.nav-bar img{
+    width: 50px;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px 5px #0000003b;
+    margin: 5px;
+    padding-top: 10px;
+}
+
+/* .page-button{
+    background-color: #c4a838;
+    color: #494237;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 15px;
+    font-family: 'VT323', monospace;
+    width: 100px;
+    height: 60px;
+} */
+
+.page-button:hover {
+    background-color: #ab8119;
+    scale: 1.12;
+}
+
 .drum-control {
     display: flex;
     align-items: center;
@@ -229,10 +353,11 @@ h1 {
     height: 80%;
     margin: 5px;
     border-radius: 5px;
+    background-color: #989898e2;
 }
 
 
-.button-active {
+.sequence .button-active {
     background-color: #4CAF50; /* Green background to indicate active/pressed */
 }
 

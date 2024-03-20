@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let activeSources = [];
     let currentDrumType = null;
 
+    let waveform = 'sine';
+
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
     masterGain.connect(audioCtx.destination);
@@ -275,6 +277,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         samples[currentDrumType] = decodedData;
                     }, error => {
                         console.error("Error decoding audio data: ", error);
+                        // Reset the button + give the user a message
+                        currentButton.textContent = 'Add sample';
+                        alert('Error decoding audio data. Please try a different file.');
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -283,11 +288,104 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+
+    // <img src="assets/drum_icon.png" class="page-button" alt="Drums" id="drum-icon">
+    // <img src="assets/synth_icon.png" class="page-button" alt="Synth" id="synth-icon">
+
+    document.querySelectorAll('.page-button').forEach(button => {
+        button.addEventListener('click', function() {
+            // get id of button
+            const id = this.id;
+            if (id === 'drum-icon') {
+                document.querySelector('.sequencer').style.display = 'block';
+                document.querySelector('.synth').style.display = 'none';
+            } else if (id === 'synth-icon') {
+                document.querySelector('.sequencer').style.display = 'none';
+                document.querySelector('.synth').style.display = 'block';
+            }
+            // set opacity to 1
+            document.querySelectorAll('.page-button').forEach(button => {
+                button.style.opacity = '0.5';
+            });
+            this.style.opacity = '1';
+        });
+    });
+
+    // all the synth stuff
+
+    function resetActiveKeys() {
+        document.querySelectorAll('.key, .black-key').forEach(button => {
+            button.classList.remove('button-active');
+        });
+    }
     
+    document.querySelectorAll('.key, .black-key').forEach(button => {
+        button.addEventListener('click', function() {
+            resetActiveKeys();
+            this.classList.add('button-active');
+            const note = this.id;
+            playNote(note);
+        });
+    });
+    
+    // <img class='waveform' id='sine' src="assets/sine.png" alt="sine">
+    // <img class="waveform" id="square" src="assets/square.png" alt="square">
+    // <img class="waveform" id="sawtooth" src="assets/sawtooth.png" alt="sawtooth">
+    // <img class="waveform" id="triangle" src="assets/triangle.png" alt="triangle">
+
+    document.querySelectorAll('.waveform').forEach(waveformButton => {
+        // initially set all but the first button to 0.5 opacity
+        if (waveformButton.id !== 'sine') {
+            waveformButton.style.opacity = '0.5';
+        }
+        waveformButton.addEventListener('click', function() {
+            waveform = this.id;
+            // make all other buttons opacity 0.5
+            document.querySelectorAll('.waveform').forEach(button => {
+                button.style.opacity = '0.5';
+            });
+            this.style.opacity = '1';
+        });
+    });
+
 
 
 
     // SOUNDS FUNCTIONS //
+    // c, c#, d, d#, e, f, f#, g, g#, a, a#, b
+    function getFrequency(note) {
+        const notes = {
+            c: 261.63,
+            'c#': 277.18,
+            d: 293.66,
+            'd#': 311.13,
+            e: 329.63,
+            f: 349.23,
+            'f#': 369.99,
+            g: 392.00,
+            'g#': 415.30,
+            a: 440.00,
+            'a#': 466.16,
+            b: 493.88
+        };
+        return notes[note];
+    }
+
+
+    function playNote(note) {
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(masterGain);
+
+        oscillator.type = waveform; // select waveform
+
+        oscillator.frequency.setValueAtTime(getFrequency(note), audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 1);
+    }
 
 
     function playKick(time) {

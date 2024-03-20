@@ -12,9 +12,9 @@
 
     <h1>Pocket Drums</h1>
     <section class="display">
-        <p>Sequencer For Synthesized Drums & Samples</p>
+        <p>Synthesizer For Sequencing Drums, Synths, & Samples</p>
         <p>Click the file button to load your own sounds, and the trash icon to reset it all!</p>
-    <secion class = "display">
+    <section class = "display">
         <!--section for playback controls-->
         <section class="playback-controls">
             <button class="button" id="play">▶</button>
@@ -38,10 +38,18 @@
             
 
         </section>
-    </secion>
-
+    </section>
+    
+    <div class="nav-bar">
+        <!-- image -->
+        <img src="assets/drum_icon.png" class="page-button" id="drum-icon" alt="Drums" >
+        <img src="assets/synth_icon.png" class="page-button" id="synth-icon" alt="Synth">
+        <!-- <button class="page-button" id="page-0"><</button>
+        <button class="page-button" id="page-1">></button> -->
+    </div>
     <!-- grid of 8 sequence buttons (2 bars) -->
     <section class="sequencer">
+        <h2>Sequencer</h2>
         <div class="drum-control">
             <p>Kick</p>
             <button class="add-sample-button kick">file</button>
@@ -77,14 +85,6 @@
             <button class="snare" id="button-5"></button>
             <button class="snare" id="button-6"></button>
             <button class="snare" id="button-7"></button>
-            <!-- <button class="snare" id="button-8"></button>
-            <button class="snare" id="button-9"></button>
-            <button class="snare" id="button-10"></button>
-            <button class="snare" id="button-11"></button>
-            <button class="snare" id="button-12"></button>
-            <button class="snare" id="button-13"></button>
-            <button class="snare" id="button-14"></button>
-            <button class="snare" id="button-15"></button> -->
         </section>
         <div class="drum-control">
             <p>Hi-Hat</p>
@@ -99,14 +99,6 @@
             <button class="hihat" id="button-5"></button>
             <button class="hihat" id="button-6"></button>
             <button class="hihat" id="button-7"></button>
-            <!-- <button class="hat" id="button-8"></button>
-            <button class="hat" id="button-9"></button>
-            <button class="hat" id="button-10"></button>
-            <button class="hat" id="button-11"></button>
-            <button class="hat" id="button-12"></button>
-            <button class="hat" id="button-13"></button>
-            <button class="hat" id="button-14"></button>
-            <button class="hat" id="button-15"></button> -->
         </section>
         <div class="drum-control">
             <p>Tom</p>
@@ -121,29 +113,39 @@
             <button class="tom" id="button-5"></button>
             <button class="tom" id="button-6"></button>
             <button class="tom" id="button-7"></button>
-            <!-- <button class="tom" id="button-8"></button>
-            <button class="tom" id="button-9"></button>
-            <button class="tom" id="button-10"></button>
-            <button class="tom" id="button-11"></button>
-            <button class="tom" id="button-12"></button>
-            <button class="tom" id="button-13"></button>
-            <button class="tom" id="button-14"></button>
-            <button class="tom" id="button-15"></button> -->
         </section>
-        <!-- <div class="drum-control">
-            <p>Bell</p>
-            <button class="add-sample-button bell">file</button>
+    </section>
+
+    <section class="synth">
+        <h2>Synth</h2>
+
+        <div class="synth-control">
+            <p>Waveform</p>
+            <!-- checkbox for each waveform -->
+            <!-- image for each  -->
+            <img class='waveform' id='sine' src="assets/sine.png" alt="sine">
+            <img class="waveform" id="square" src="assets/square.png" alt="square">
+            <img class="waveform" id="sawtooth" src="assets/sawtooth.png" alt="sawtooth">
+            <img class="waveform" id="triangle" src="assets/triangle.png" alt="triangle">
         </div>
-        <section class="sequence"  data-sound="bell">
-            <button class="bell" id="button-0"></button>
-            <button class="bell" id="button-1"></button>
-            <button class="bell" id="button-2"></button>
-            <button class="bell" id="button-3"></button>
-            <button class="bell" id="button-4"></button>
-            <button class="bell" id="button-5"></button>
-            <button class="bell" id="button-6"></button>
-            <button class="bell" id="button-7"></button>
-        </section> -->
+
+        <div class="synth-control">
+            <!-- button for all keys c-b (11) -->
+            <!-- c1 -->
+            <button class="key" id="c">C</button>
+            <button class="black-key" id="c#">C#</button>
+            <button class="key" id="d">D</button>
+            <button class="black-key" id="d#">D#</button>
+            <button class="key" id="e">E</button>
+            <button class="key" id="f">F</button>
+            <button class="black-key" id="f#">F#</button>
+            <button class="key" id="g">G</button>
+            <button class="black-key" id="g#">G#</button>
+            <button class="key" id="a">A</button>
+            <button class="black-key" id="a#">A#</button>
+            <button class="key" id="b">B</button>
+        </div>
+            
     </section>
 
     <section class="display">
