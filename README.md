@@ -1,4 +1,4 @@
-# Pocket Drums: A Real-Time Audio Synthesizer
+# [Pocket Drums: A Real-Time Audio Synthesizer](https://mbermanucsc.github.io/Pocket-Drums/)
 
 **Developer:** Miles Berman
 **Date:** March 18, 2024
