@@ -24,6 +24,15 @@ document.addEventListener('DOMContentLoaded', function () {
     masterGain.connect(audioCtx.destination);
     masterGain.gain.value = 0.8; // master volume here
 
+    const synthGain = audioCtx.createGain();
+    const drumGain = audioCtx.createGain();
+
+    synthGain.connect(masterGain);
+    drumGain.connect(masterGain);
+
+    synthGain.gain.value = 0.8;
+    drumGain.gain.value = 0.8;
+
 
     
 
@@ -174,6 +183,18 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('master').addEventListener('input', function() {
         const value = this.value;
         masterGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
+    });
+
+    // synth volume control
+    document.getElementById('synth').addEventListener('input', function() {
+        const value = this.value;
+        synthGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
+    });
+
+    // drum volume control
+    document.getElementById('drums').addEventListener('input', function() {
+        const value = this.value;
+        drumGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
     });
 
     // shuffle button
@@ -384,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         oscillator.connect(gainNode);
-        gainNode.connect(masterGain);
+        gainNode.connect(synthGain);
         oscillator.type = waveform;
         oscillator.frequency.setValueAtTime(getFrequency(note), time);
         gainNode.gain.setValueAtTime(0.1, time);
@@ -399,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let gainNode = audioCtx.createGain();
     
         oscillator.connect(gainNode);
-        gainNode.connect(masterGain); 
+        gainNode.connect(drumGain); 
     
         oscillator.frequency.setValueAtTime(150, time); // initial frequency
         oscillator.frequency.exponentialRampToValueAtTime(0.01, time + 0.2); // rapid pitch drop for the kick sound
@@ -433,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         let noiseEnvelope = audioCtx.createGain();
         noiseFilter.connect(noiseEnvelope);
-        noiseEnvelope.connect(masterGain); 
+        noiseEnvelope.connect(drumGain); 
     
         noiseEnvelope.gain.setValueAtTime(1, time);
         noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
@@ -462,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         let gainNode = audioCtx.createGain();
         highPassFilter.connect(gainNode);
-        gainNode.connect(masterGain); 
+        gainNode.connect(drumGain); 
     
         gainNode.gain.setValueAtTime(1, time);
         gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.05); // quick decay for the sharp "hit" sound
@@ -481,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         oscillator.connect(lowpassFilter);
         lowpassFilter.connect(gainNode);
-        gainNode.connect(masterGain);
+        gainNode.connect(drumGain);
         oscillator.frequency.setValueAtTime(120, time); // start frequency
         oscillator.frequency.exponentialRampToValueAtTime(80, time + 0.2); // end frequency for pitch drop
     
@@ -511,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function () {
         oscillator.connect(highpassFilter);
         highpassFilter.connect(lowpassFilter);
         lowpassFilter.connect(gainNode);
-        gainNode.connect(masterGain);
+        gainNode.connect(drumGain);
         
         oscillator.frequency.setValueAtTime(500, time);
         oscillator.frequency.exponentialRampToValueAtTime(100, time + 1);
@@ -529,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function playSample(buffer, time) {
         const source = audioCtx.createBufferSource();
         source.buffer = buffer;
-        source.connect(masterGain); 
+        source.connect(drumGain); 
         source.start(time);
     
         activeSources.push(source);

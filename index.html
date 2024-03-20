@@ -31,13 +31,15 @@
         <section class="playback-controls">
             <!-- master gain -->
             <p>Gain</p>
-            <input class="slider" type="range" id="master" value="100" min="0" max="80">
+            <input class="slider" type="range" id="master" value="80" min="0" max="80">
             <!-- divisions checkbox -->
             <input type="checkbox" id="division">
             <p>16th notes</p>
             
 
         </section>
+
+        
     </section>
     
     <div class="nav-bar">
@@ -47,8 +49,10 @@
         <!-- <button class="page-button" id="page-0"><</button>
         <button class="page-button" id="page-1">></button> -->
     </div>
+    
     <!-- grid of 8 sequence buttons (2 bars) -->
     <section class="sequencer">
+        
         <h2>Sequencer</h2>
         <div class="drum-control">
             <p>Kick</p>
@@ -114,11 +118,15 @@
             <button class="tom" id="button-6"></button>
             <button class="tom" id="button-7"></button>
         </section>
+        <section class="playback-controls">
+            <!-- volume slider for each sound -->
+            <p>Gain</p>
+            <input class="slider" type="range" id="drums" value="80" min="0" max="80">
+        </section>
     </section>
 
     <section class="synth">
         <h2>Synth</h2>
-
         <div class="synth-control">
             <!-- checkbox for each waveform -->
             <!-- image for each  -->
@@ -144,6 +152,11 @@
             <button class="black-key" id="a#">A#</button>
             <button class="key" id="b">B</button>
         </div>
+        <section class="playback-controls">
+            <!-- volume slider for each sound -->
+            <p>Gain</p>
+            <input class="slider" type="range" id="synth" value="80" min="0" max="80">
+        </section>
             
     </section>
 
