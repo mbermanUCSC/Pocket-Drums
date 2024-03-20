@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     bpmInput.addEventListener('input', function() {
+        if (bpmInput.value <1) return;
         bpm = Number(bpmInput.value);
     });
 
