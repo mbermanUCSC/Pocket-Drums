@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let division = 2;
     const notesInQueue = []; // Tracks the notes that are scheduled
     let requestID;
+    let bpmLocked = false;
 
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
@@ -132,8 +133,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // shuffle button
     document.getElementById('shuffle').addEventListener('click', function() {
         // randomly set the bpm between 60 and 180
-        bpm = Math.floor(Math.random() * 120) + 60;
-        bpmInput.value = bpm;
+        if (!bpmLocked){
+            bpm = Math.floor(Math.random() * 120) + 60;
+            bpmInput.value = bpm;
+        }
         // reset all buttons
         sequences.forEach(sequence => {
             sequence.querySelectorAll('button').forEach(button => {
@@ -198,9 +201,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 i += 1;
             });
         });
-
     });
     
+
+    // bpm lock checkbox
+    document.getElementById('bpm-lock').addEventListener('change', function() {
+        bpmInput.disabled = this.checked;
+        bpmLocked = this.checked;
+    });
     
 
 
