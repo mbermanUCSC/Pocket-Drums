@@ -349,7 +349,7 @@ h1 {
 /* Main Drum Buttons */
 .sequence button {
     flex: 1;
-    height: 80%;
+    height: 50%;
     margin: 5px;
     border-radius: 5px;
     background-color: #989898e2;
