@@ -195,6 +195,9 @@ h1 {
     padding: 2px;
     margin: 5px;
     cursor: pointer;
+    border-radius: 5px;
+    font-size: 15px;
+    font-family: 'VT323', monospace;
 }
 
 /* drum button hover */
@@ -237,9 +240,6 @@ h1 {
     height: 80%;
     margin: 5px;
     border-radius: 5px;
-    /* cool styling */
-    border : 8px solid #47594e57;
-    cursor: pointer;
 }
 
 
@@ -250,6 +250,7 @@ h1 {
 .current-beat {
     /* Example styling for the current beat */
     border: 2px solid #FFD700; /* Gold border */
+    box-shadow: 0 0 10px 5px #857517b0; /* Gold shadow */
 }
 
 
