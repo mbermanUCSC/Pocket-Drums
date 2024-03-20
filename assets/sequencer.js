@@ -350,6 +350,12 @@ document.addEventListener('DOMContentLoaded', function () {
     
     document.querySelectorAll('.key, .black-key').forEach(button => {
         button.addEventListener('click', function() {
+            // if key in keys, remove it
+            if (keys.includes(this.id)) {
+                this.classList.remove('button-active');
+                keys = keys.filter(key => key !== this.id);
+                return;
+            }
             this.classList.add('button-active');
             const note = this.id;
             keys.push(note);
