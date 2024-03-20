@@ -9,16 +9,26 @@
     <link rel="icon" href="assets/favicon.png" type="image/png">
 </head>
 <body>
+    
     <h1>Little Sequencer</h1>
-    <!--section for playback controls-->
-    <section class="playback-controls">
-        <button class="button" id="play">▶</button>
-        <button class="reset" id="reset">🗑️</button>
-        <button class="shuffle" id="shuffle">🔀</button>
-        <!-- bpm number field -->
-        <input type="number" id="bpm" value="120" min="60" max="240">
-        <p>BPM</p>
-    </section>
+    <secion class = "display">
+        <!--section for playback controls-->
+        <section class="playback-controls">
+            <button class="button" id="play">▶</button>
+            <button class="reset" id="reset">🗑️</button>
+            <button class="shuffle" id="shuffle">🔀</button>
+            <!-- bpm number field -->
+            <input type="number" id="bpm" value="120" min="60" max="240">
+            <p>BPM</p>
+        </section>
+
+        <section class="playback-controls">
+            <!-- master gain -->
+            <p>Master Gain</p>
+            <input class="slider" type="range" id="master" value="100" min="0" max="80">
+
+        </section>
+    </secion>
 
     <!-- grid of 8 sequence buttons (2 bars) -->
     <section class="sequencer">
@@ -69,14 +79,14 @@
             <p>Hi-Hat</p>
         </div>
         <section class="sequence" data-sound="hihat">
-            <button class="hat" id="button-0"></button>
-            <button class="hat" id="button-1"></button>
-            <button class="hat" id="button-2"></button>
-            <button class="hat" id="button-3"></button>
-            <button class="hat" id="button-4"></button>
-            <button class="hat" id="button-5"></button>
-            <button class="hat" id="button-6"></button>
-            <button class="hat" id="button-7"></button>
+            <button class="hihat" id="button-0"></button>
+            <button class="hihat" id="button-1"></button>
+            <button class="hihat" id="button-2"></button>
+            <button class="hihat" id="button-3"></button>
+            <button class="hihat" id="button-4"></button>
+            <button class="hihat" id="button-5"></button>
+            <button class="hihat" id="button-6"></button>
+            <button class="hihat" id="button-7"></button>
             <!-- <button class="hat" id="button-8"></button>
             <button class="hat" id="button-9"></button>
             <button class="hat" id="button-10"></button>

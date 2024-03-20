@@ -8,11 +8,15 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentBeat = 0;
     let bpm = 120;
     const notesInQueue = []; // Tracks the notes that are scheduled
+    let requestID;
 
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
     masterGain.connect(audioCtx.destination);
     masterGain.gain.value = 0.8; // Adjust master volume here
+
+
+    
 
     function playSound(sound, time) {
         if (sound === "kick") playKick(time);
@@ -46,12 +50,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateCurrentBeatIndicator();
 
-        const secondsPerBeat = 60.0 / bpm;
+        const secondsPerBeat = 60.0 / bpm/2;
         nextNoteTime += secondsPerBeat;
         currentBeat = (currentBeat + 1) % sequences[0].querySelectorAll('button').length;
     }
 
     function scheduler() {
+        if (!isPlaying) return;
         while (nextNoteTime < audioCtx.currentTime + 0.1) {
             scheduleNote();
         }
@@ -70,13 +75,20 @@ document.addEventListener('DOMContentLoaded', function () {
     function stopSequencer() {
         if (isPlaying) {
             isPlaying = false;
+            cancelAnimationFrame(requestID);
+            currentBeat = 0; 
+            updateCurrentBeatIndicator(); 
         }
     }
+    
 
     playButton.addEventListener('click', function() {
         if (isPlaying) {
+            // set the text to ||
+            playButton.textContent = '▶';
             stopSequencer();
         } else {
+            playButton.textContent = '||';
             startSequencer();
         }
     });
@@ -109,6 +121,82 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    document.getElementById('master').addEventListener('input', function() {
+        const value = this.value;
+        masterGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
+    });
+
+    // shuffle button
+    document.getElementById('shuffle').addEventListener('click', function() {
+        // reset all buttons
+        sequences.forEach(sequence => {
+            sequence.querySelectorAll('button').forEach(button => {
+                button.classList.remove('button-active');
+            });
+        });
+
+        // randomly activate buttons (favor hihat)
+        sequences.forEach(sequence => {
+            let i = 0;
+            sequence.querySelectorAll('button').forEach(button => {
+                // if class is hi hat, activate 50% of the time
+                if (button.classList.contains('hihat')) {
+                    if (Math.random() > 0.3) {
+                        button.classList.add('button-active');
+                    }
+                }
+                else if (button.classList.contains('tom')) {
+                    if (Math.random() > 0.9) {
+                        button.classList.add('button-active');
+                    }
+                }
+                else if (button.classList.contains('kick')) {
+                    if (Math.random() > 0.9) {
+                        button.classList.add('button-active');
+                    }
+                    // bar %4
+                    if (i % 4 === 0) {
+                        if (Math.random() > 0.7) {
+                            button.classList.add('button-active');
+                        }
+                    }
+                    if (i === 0) {
+                        if (Math.random() > 0.8) {
+                            button.classList.add('button-active');
+                        }
+                    }
+                }
+                else if (button.classList.contains('snare')) {
+                    if (Math.random() > 0.9) {
+                        button.classList.add('button-active');
+                    }
+                    // bar %2
+                    if (i % 2 === 0) {
+                        if (Math.random() > 0.6) {
+                            button.classList.add('button-active');
+                        }
+                    }
+                }
+                else if (button.classList.contains('tom')){
+                    if (Math.random() > 1) {
+                        button.classList.add('button-active');
+                    }
+                    // i % 2,4 != 0 
+                    if (i % 2 !== 0 && i % 4 !== 0) {
+                        if (Math.random() > 0.8) {
+                            button.classList.add('button-active');
+                        }
+                    }
+                }
+                
+                i += 1;
+            });
+        });
+
+    });
+    
+    
 
 
 

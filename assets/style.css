@@ -17,6 +17,18 @@ h1 {
     background-color: #00000063;
 }
 
+.display {
+    /* 1x2 stacked */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 3px solid #3519360a;
+    border-radius: 10px;
+    background-color: #472b444b;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px 5px #0000003b;
+}
+
 .playback-controls {
     display: flex;
     justify-content: center;
@@ -88,6 +100,25 @@ h1 {
     background-color: #bdbdbd;
 }
 
+.playback-controls .slider{
+    /* retro style */
+    /* just use css */
+    -webkit-appearance: none;
+    width: 20%;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;  
+    transition: opacity .2s;
+    border-radius: 5px;
+    margin: 5px;
+    box-shadow: 0 0 10px 5px #0000003b;
+    /* extra stylin */
+    margin-left: 10px;
+    margin-right: 10px;
+
+}
 
 .sequencer {
     background-color: #736023a6;
