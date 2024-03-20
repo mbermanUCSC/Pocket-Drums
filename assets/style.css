@@ -334,13 +334,13 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 5px;
     margin-bottom: 20px;
     background-color: #aa903aa6;
     border: 3px solid #4f3737;
     border-radius: 5px;
-    padding: 10px;
-    height: 100px;
+    padding: 5px;
+    height: 90px;
     box-shadow: 0 0 10px 5px #00000090;
     /* keep content on screen */
     max-width: 100%;
@@ -349,7 +349,7 @@ h1 {
 /* Main Drum Buttons */
 .sequence button {
     flex: 1;
-    height: 50%;
+    height: 60%;
     margin: 5px;
     border-radius: 5px;
     background-color: #989898e2;
