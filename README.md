@@ -22,7 +22,7 @@ To start using the synth, simply visit [the site](https://mbermanucsc.github.io/
 
 ### Controls
 
-- **Start/Stop Sound:** [Press the play/pause or "new" button]
+- **Start/Stop Sound:** [Press the play/pause button]
 - **Modify Parameters:** [Change the BPM for different speeds for your sequences]
 - **Sequencing:** [Simply click on the squares that you want to enable, and sounds will play]
 
