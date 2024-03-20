@@ -1,4 +1,4 @@
-# Miles Synth: A Real-Time Audio Synthesizer
+# Pocket Drums: A Real-Time Audio Synthesizer
 
 **Developer:** Miles Berman
 **Date:** March 18, 2024
