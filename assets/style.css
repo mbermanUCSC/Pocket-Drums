@@ -46,6 +46,15 @@ h1 {
     margin-bottom: 10px;
 }
 
+.display a {
+    font-family: 'VT323', monospace;
+    color: #53f17d;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
+
 
 /* Playback, BPM, Gain, etc. */
 .playback-controls {
