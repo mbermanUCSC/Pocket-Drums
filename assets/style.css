@@ -41,6 +41,7 @@ h1 {
     box-shadow: 0 0 10px 5px #000000cc;
     /* keep content on screen */
     overflow: hidden;
+    padding-left: 50px;
 }
 
 /* playback button */
