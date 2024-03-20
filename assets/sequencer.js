@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let nextNoteTime = audioCtx.currentTime;
     let currentBeat = 0;
     let bpm = 120;
+    let division = 2;
     const notesInQueue = []; // Tracks the notes that are scheduled
     let requestID;
 
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateCurrentBeatIndicator();
 
-        const secondsPerBeat = 60.0 / bpm/2;
+        const secondsPerBeat = 60.0 / bpm/division;
         nextNoteTime += secondsPerBeat;
         currentBeat = (currentBeat + 1) % sequences[0].querySelectorAll('button').length;
     }
@@ -326,5 +327,9 @@ document.addEventListener('DOMContentLoaded', function () {
         gainNode.gain.linearRampToValueAtTime(0.001, time + 0.45); // Smooth fade out to prevent clicking
     }
     
+    // checkbox for division
+    document.getElementById('division').addEventListener('change', function() {
+        division = this.checked ? 4 : 2;
+    });
 
 });
