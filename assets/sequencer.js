@@ -58,42 +58,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // shuffle button
-    shuffleButton.addEventListener('click', shuffle);
-    
-
-
-    function shuffle() {
-        sequences.forEach(sequence => {
-            sequence.querySelectorAll('button').forEach(button => {
-                // if is hi hat (check class = 'hat')
-                if (button.classList.contains('hat')) {
-                    if (Math.random() > 0.6) {
-                        button.classList.add('button-active');
-                    } else {
-                        button.classList.remove('button-active');
-                    }
-                }
-                else if (button.classList.contains('tom')) {
-                    if (Math.random() > 0.9) {
-                        button.classList.add('button-active');
-                    } else {
-                        button.classList.remove('button-active');
-                    }
-                }
-                else {
-                    if (Math.random() > 0.8) {
-                        button.classList.add('button-active');
-                    } else {
-                        button.classList.remove('button-active');
-                    }
-                }
-            }
-            );
-            
-        });
-    }
-
                 
     
 
@@ -228,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function moveNextBeat() {
-        currentBeat = (currentBeat + 1) % 16;
+        currentBeat = (currentBeat + 1) % 8;
 
         sequences.forEach((sequence, seqIndex) => {
             const buttons = sequence.querySelectorAll('button');
