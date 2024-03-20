@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentDrumType = null;
 
     let waveform = 'sine';
+    let keys = [];
 
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
@@ -62,6 +63,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 playSound(sound, nextNoteTime);
             }
         });
+
+        // if there are notes in the key list, play a random note
+        if (keys.length > 0) {
+            const note = keys[Math.floor(Math.random() * keys.length)];
+            playNote (note, nextNoteTime);
+        }
+    
 
         updateCurrentBeatIndicator();
 
@@ -321,10 +329,9 @@ document.addEventListener('DOMContentLoaded', function () {
     
     document.querySelectorAll('.key, .black-key').forEach(button => {
         button.addEventListener('click', function() {
-            resetActiveKeys();
             this.classList.add('button-active');
             const note = this.id;
-            playNote(note);
+            keys.push(note);
         });
     });
     
@@ -372,19 +379,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    function playNote(note) {
+    // play note with scheduling
+    function playNote(note, time) {
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         oscillator.connect(gainNode);
         gainNode.connect(masterGain);
-
-        oscillator.type = waveform; // select waveform
-
-        oscillator.frequency.setValueAtTime(getFrequency(note), audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 1);
+        oscillator.type = waveform;
+        oscillator.frequency.setValueAtTime(getFrequency(note), time);
+        gainNode.gain.setValueAtTime(0.1, time);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 1);
+        oscillator.start(time);
+        oscillator.stop(time + 1);
     }
 
 
