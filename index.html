@@ -14,7 +14,7 @@
     <section class="playback-controls">
         <button class="button" id="play">▶</button>
         <button class="reset" id="reset">🗑️</button>
-        <!-- <button class="shuffle" id="shuffle">🔀</button> -->
+        <button class="shuffle" id="shuffle">🔀</button>
         <!-- bpm number field -->
         <input type="number" id="bpm" value="120" min="60" max="240">
         <p>BPM</p>
@@ -26,7 +26,7 @@
             <p>Kick</p>
         </div>
         <!-- mute button -->
-        <section class="sequence">
+        <section class="sequence" data-sound="kick">
             <button class="kick" id="button-0"></button>
             <button class="kick" id="button-1"></button>
             <button class="kick" id="button-2"></button>
@@ -47,7 +47,7 @@
         <div class="drum-control">
             <p>Snare</p>
         </div>
-        <section class="sequence">
+        <section class="sequence" data-sound="snare">
             <button class="snare" id="button-0"></button>
             <button class="snare" id="button-1"></button>
             <button class="snare" id="button-2"></button>
@@ -68,7 +68,7 @@
         <div class="drum-control">
             <p>Hi-Hat</p>
         </div>
-        <section class="sequence">
+        <section class="sequence" data-sound="hihat">
             <button class="hat" id="button-0"></button>
             <button class="hat" id="button-1"></button>
             <button class="hat" id="button-2"></button>
@@ -89,7 +89,7 @@
         <div class="drum-control">
             <p>Tom</p>
         </div>
-        <section class="sequence">
+        <section class="sequence"  data-sound="tom">
             <button class="tom" id="button-0"></button>
             <button class="tom" id="button-1"></button>
             <button class="tom" id="button-2"></button>
