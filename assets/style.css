@@ -17,6 +17,8 @@ h1 {
     background-color: #00000063;
 }
 
+
+
 .display {
     /* 1x2 stacked */
     display: flex;
@@ -27,6 +29,22 @@ h1 {
     background-color: #472b444b;
     margin-bottom: 20px;
     box-shadow: 0 0 10px 5px #0000003b;
+}
+
+.display h2 {
+    font-family: 'VT323', monospace;
+    color: #e7e571;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.display p {
+    font-family: 'VT323', monospace;
+    color: #e7e571;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 .playback-controls {

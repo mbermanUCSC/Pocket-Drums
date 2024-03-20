@@ -128,9 +128,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             activeSources = [];
 
-            // clear the sample name
-
-
+            samples = {};
+            // clear the sample buttons
+            document.querySelectorAll('.add-sample-button').forEach(button => {
+                button.textContent = 'Add sample';
+            });
         });
     });
 
