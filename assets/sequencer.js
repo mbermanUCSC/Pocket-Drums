@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentBeat = 0;
     let bpm = 120;
     let division = 2;
-    const notesInQueue = []; // Tracks the notes that are scheduled
+    const notesInQueue = []; // tracks the notes that are scheduled
     let requestID;
     let bpmLocked = false;
 
@@ -19,14 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
     masterGain.connect(audioCtx.destination);
-    masterGain.gain.value = 0.8; // Adjust master volume here
+    masterGain.gain.value = 0.8; // master volume here
 
 
     
 
     function playSound(sound, time) {
-        // check if sound is in samples
-        if (samples[sound]) {
+        if (samples[sound]) { // check if sound is in samples
             playSample(samples[sound], time);
             return;
         }
@@ -36,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (sound === "tom") playTom(time);
     }
 
+    // highlight the current beat
     function updateCurrentBeatIndicator() {
         document.querySelectorAll('.sequence button').forEach(button => {
             button.classList.remove('current-beat');
@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
+    // NOTE SCHEDULING FUNCTIONS //
 
     function scheduleNote() {
         sequences.forEach((seq, index) => {
@@ -74,11 +75,31 @@ document.addEventListener('DOMContentLoaded', function () {
         requestAnimationFrame(scheduler);
     }
 
+    // Handle window focus and blur for audio context
+    window.addEventListener('blur', function() {
+        audioCtx.suspend();
+    });
+
+    window.addEventListener('focus', function() {
+        audioCtx.resume();
+    });
+
+    sequences.forEach(sequence => {
+        sequence.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('button-active');
+            });
+        });
+    });
+
+
+    // SEQUENCER CONTROLS //
+
     function startSequencer() {
         if (!isPlaying) {
             isPlaying = true;
             currentBeat = 0;
-            nextNoteTime = audioCtx.currentTime + 0.05; // Short delay before starting to ensure timing accuracy
+            nextNoteTime = audioCtx.currentTime + 0.05; // short delay before starting for accuracy (idk why)
             scheduler();
         }
     }
@@ -92,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
     
-
+    // play/pause button
     playButton.addEventListener('click', function() {
         if (isPlaying) {
             // set the text to ||
@@ -104,11 +125,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // bpm input
     bpmInput.addEventListener('input', function() {
         if (bpmInput.value <1) return;
         bpm = Number(bpmInput.value);
     });
 
+    // reset button
     document.getElementById('reset').addEventListener('click', function() {
         sequences.forEach(sequence => {
             sequence.querySelectorAll('button').forEach(button => {
@@ -136,23 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Handle window focus and blur for audio context
-    window.addEventListener('blur', function() {
-        audioCtx.suspend();
-    });
-
-    window.addEventListener('focus', function() {
-        audioCtx.resume();
-    });
-
-    sequences.forEach(sequence => {
-        sequence.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', function() {
-                this.classList.toggle('button-active');
-            });
-        });
-    });
-
+    // master volume control
     document.getElementById('master').addEventListener('input', function() {
         const value = this.value;
         masterGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
@@ -243,6 +250,8 @@ document.addEventListener('DOMContentLoaded', function () {
         division = this.checked ? 4 : 2;
     });
 
+
+    // SAMPLER FUNCTIONS //
 
 
     document.querySelectorAll('.add-sample-button').forEach(button => {

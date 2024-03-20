@@ -1,6 +1,6 @@
 
 
-/* background for page */
+/* Background + Basics */
 body {
     background-color: #3e6249;
     color: #ffffff;
@@ -18,9 +18,8 @@ h1 {
 }
 
 
-
+/* Main Text + Title */
 .display {
-    /* 1x2 stacked */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -47,6 +46,8 @@ h1 {
     margin-bottom: 10px;
 }
 
+
+/* Playback, BPM, Gain, etc. */
 .playback-controls {
     display: flex;
     justify-content: center;
@@ -101,8 +102,6 @@ h1 {
 
 /* checkbox */
 .playback-controls input[type="checkbox"] {
-    /* retro style */
-
     width: 20px;
     height: 20px;
     background: #d3d3d3;
@@ -128,7 +127,7 @@ h1 {
 
 
 /* time signature */
-.playback-controls select {
+/* .playback-controls select {
     padding: 10px;
     margin: 5px;
     border-radius: 5px;
@@ -136,11 +135,9 @@ h1 {
     font-size: 20px;
     text-align: center;
     background-color: #bdbdbd;
-}
+} */
 
 .playback-controls .slider{
-    /* retro style */
-    /* just use css */
     -webkit-appearance: none;
     width: 20%;
     height: 25px;
@@ -158,12 +155,12 @@ h1 {
 
 }
 
+/* Sequencer */
 .sequencer {
     background-color: #736023a6;
     border: 3px solid #4f3737;
     padding: 10px;
     border-radius: 10px;
-    /* shadow */
     box-shadow: 0 0 10px 5px #000000;
 }
 
@@ -172,19 +169,6 @@ h1 {
     align-items: center;
     justify-content: start;
     margin-bottom: 10px;
-}
-
-.drum-control .mute-button {
-    background-color: #989898;
-    color: #494237;
-    border: none;
-    padding: 2px;
-    margin: 5px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 15px;
-    font-family: 'VT323', monospace;
-    margin-left: 10px;
 }
 
 /* drum button */
@@ -206,8 +190,6 @@ h1 {
     scale: 1.12;
 }
 
-/* drum control chechbox */
-
 .drum-control p {
     font-size: 16px;
     font-family: 'VT323', monospace;
@@ -226,15 +208,13 @@ h1 {
     border: 3px solid #4f3737;
     border-radius: 5px;
     padding: 10px;
-    /* locked width */
     height: 100px;
-    /* shadow */
     box-shadow: 0 0 10px 5px #00000090;
     /* keep content on screen */
     max-width: 100%;
 }
 
-/* make sure the buttons fill ethe sequence */
+/* Main Drum Buttons */
 .sequence button {
     flex: 1;
     height: 80%;
@@ -248,7 +228,6 @@ h1 {
 }
 
 .current-beat {
-    /* Example styling for the current beat */
     border: 2px solid #FFD700; /* Gold border */
     box-shadow: 0 0 10px 5px #857517b0; /* Gold shadow */
 }
