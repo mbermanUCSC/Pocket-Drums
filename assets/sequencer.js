@@ -131,6 +131,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // shuffle button
     document.getElementById('shuffle').addEventListener('click', function() {
+        // randomly set the bpm between 60 and 180
+        bpm = Math.floor(Math.random() * 120) + 60;
+        bpmInput.value = bpm;
         // reset all buttons
         sequences.forEach(sequence => {
             sequence.querySelectorAll('button').forEach(button => {
