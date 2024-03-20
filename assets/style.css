@@ -169,11 +169,26 @@ h1 {
     margin-left: 10px;
 }
 
+/* drum button */
+.drum-control button {
+    background-color: #989898;
+    color: #494237;
+    border: none;
+    padding: 2px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 15px;
+    font-family: 'VT323', monospace;
+}
+
 /* drum button hover */
 .drum-control button:hover {
     background-color: #6a6a6a;
     scale: 1.12;
 }
+
+/* drum control chechbox */
 
 .drum-control p {
     font-size: 16px;

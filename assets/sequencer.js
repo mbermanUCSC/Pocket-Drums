@@ -115,9 +115,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 button.classList.remove('button-active');
             });
             // clear bpm
-            bpmInput.value = 120;
-            document.getElementById('bpm-lock').checked = false;
-
+            if (!bpmLocked){
+                bpmInput.value = 120;
+            }
+            
             // clear division
             document.getElementById('division').checked = false;
 
