@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                     // bar %2
                     if (i % 2 === 0) {
-                        if (Math.random() > 0.6) {
+                        if (Math.random() > 0.7) {
                             button.classList.add('button-active');
                         }
                     }
