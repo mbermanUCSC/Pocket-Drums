@@ -421,12 +421,15 @@ document.addEventListener('DOMContentLoaded', function () {
         gainNode.connect(synthGain);
         oscillator.type = waveform;
         oscillator.frequency.setValueAtTime(getFrequency(note, octave), time);
+        
         gainNode.gain.setValueAtTime(0.1, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 1);
+        // Ramp down more smoothly to avoid clipping
+        gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.95);
+    
         oscillator.start(time);
-        oscillator.stop(time + 1);
+        oscillator.stop(time + 1.05); // Stop the oscillator a little later
     }
-
+    
 
     function playKick(time) {
         let oscillator = audioCtx.createOscillator();
