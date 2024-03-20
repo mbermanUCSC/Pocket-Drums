@@ -76,7 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // if there are notes in the key list, play a random note
         if (keys.length > 0) {
             const note = keys[Math.floor(Math.random() * keys.length)];
-            playNote (note, nextNoteTime);
+            // randomly choose an octave # -1 to 3
+            const octave = Math.floor(Math.random() * 4) - 1;
+            playNote(note, nextNoteTime, octave);
         }
     
 
@@ -391,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // SOUNDS FUNCTIONS //
     // c, c#, d, d#, e, f, f#, g, g#, a, a#, b
-    function getFrequency(note) {
+    function getFrequency(note, octave) {
         const notes = {
             c: 261.63,
             'c#': 277.18,
@@ -406,18 +408,19 @@ document.addEventListener('DOMContentLoaded', function () {
             'a#': 466.16,
             b: 493.88
         };
-        return notes[note];
+        // scale so octave 1 is c1, ocvate 2 is c2, octave -1 is c0, etc
+        return notes[note] * Math.pow(2, octave - 1);
     }
 
 
     // play note with scheduling
-    function playNote(note, time) {
+    function playNote(note, time, octave = 1) {
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         oscillator.connect(gainNode);
         gainNode.connect(synthGain);
         oscillator.type = waveform;
-        oscillator.frequency.setValueAtTime(getFrequency(note), time);
+        oscillator.frequency.setValueAtTime(getFrequency(note, octave), time);
         gainNode.gain.setValueAtTime(0.1, time);
         gainNode.gain.exponentialRampToValueAtTime(0.01, time + 1);
         oscillator.start(time);
