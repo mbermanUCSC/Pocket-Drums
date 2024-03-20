@@ -192,7 +192,8 @@ h1 {
     border: 3px solid #4f3737;
     border-radius: 5px;
     box-shadow: 0 0 10px 5px #0000003b;
-    padding: 10px;
+    /* keep content on screen */
+    overflow: hidden;
     
 }
 
@@ -201,7 +202,7 @@ h1 {
     background-color: #989898;
     color: #494237;
     border: none;
-    padding: 10px;
+    padding: 2px;
     margin: 4px;
     cursor: pointer;
     border-radius: 5px;
@@ -216,17 +217,17 @@ h1 {
     background-color: #494237;
     color: #989898;
     border: none;
-    padding: 10px;
+    padding: 2px;
     margin: 4px;
     cursor: pointer;
     border-radius: 5px;
-    font-size: 20px;
+    font-size: 14px;
     font-family: 'VT323', monospace;
     /* fixed size */
     width: 60px;
-    height: 85px;
+    height: 90px;
 
-    margin-top: -5px;
+    margin-top: -2px;
     box-shadow: 0 0 10px 5px #0000003b;
 }
 
