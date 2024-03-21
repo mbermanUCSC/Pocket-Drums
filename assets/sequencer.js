@@ -573,6 +573,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.transpose').forEach(button => {
             button.style.opacity = this.checked ? '0.5' : '1';
         });
+        song = {};
     });
 
     //  <input type="checkbox" id="weighted-synth">
