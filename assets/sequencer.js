@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // if there are notes in the key list, play a random note
-        if (keys.length > 0) {
+        if (keys.length > 0 && !touchSynth) {
             const note = keys[Math.floor(Math.random() * keys.length)];
             // randomly choose an octave # -1 to 3
             const octave = Math.floor(Math.random() * 4) - 1;
