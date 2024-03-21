@@ -1,3 +1,5 @@
+import { kick1, snare1, hihat1, tom1, bell1, kick2, snare2, hihat2, tom2, bell2, kick3, snare3, hihat3, tom3, bell3 } from './drumKits.js';
+
 document.addEventListener('DOMContentLoaded', function () {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const playButton = document.getElementById('play');
@@ -16,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let samples = {};
     let activeSources = [];
     let currentDrumType = null;
+    let drumKit = 0;
 
     let waveform = 'sine';
     let keys = [];
@@ -51,9 +54,9 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (sound === "snare") playSnare(time);
         else if (sound === "hihat") playHiHat(time);
         else if (sound === "tom") playTom(time);
-        else if (sound === "bell") playBell(time, getFrequency(document.querySelector('.transpose-key').textContent.toLowerCase(), 2));
 
-        else if (sound === "bell") playBell(time);
+        else if (!document.getElementById('extra-drums').checked) return;
+        else if (sound === "bell") playBell(time, getFrequency(document.querySelector('.transpose-key').textContent.toLowerCase(), 2));
     }
 
     // highlight the current beat
@@ -416,6 +419,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('extra-drums').checked = false;
     document.querySelector('.extra-drums').style.display = 'none';
 
+    // kit selector
+    // <select id="kit-select">
+    //         <option value="default">Retro 1</option>
+    //         <option value="retro2">Retro 2</option>
+    //     </select>
+    // set drumkit to the value of the select
+    document.getElementById('kit-select').addEventListener('change', function() {
+        drumKit = this.selectedIndex;
+    });
 
     // SYNTH FUNCTIONS //
 
@@ -681,139 +693,72 @@ document.addEventListener('DOMContentLoaded', function () {
         oscillator.start(time);
         oscillator.stop(time + 1.05); // Stop the oscillator a little later
     }
-    
 
+    // play kick
     function playKick(time) {
-        let oscillator = audioCtx.createOscillator();
-        let gainNode = audioCtx.createGain();
-    
-        oscillator.connect(gainNode);
-        gainNode.connect(drumGain); 
-    
-        oscillator.frequency.setValueAtTime(150, time); // initial frequency
-        oscillator.frequency.exponentialRampToValueAtTime(0.01, time + 0.2); // rapid pitch drop for the kick sound
-    
-        gainNode.gain.setValueAtTime(1, time); // Start at full volume
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.45); 
-    
-        oscillator.start(time);
-        oscillator.stop(time + 0.5);
-    
-        // Addition for smoother ending (may not need)
-        gainNode.gain.setValueAtTime(0.01, time + 0.45);
-        gainNode.gain.linearRampToValueAtTime(0.001, time + 0.5);
+        if (drumKit === 0) {
+            kick1(time, audioCtx, drumGain);
+        }
+        else if (drumKit === 1) {
+            kick2(time, audioCtx, drumGain);
+        }
+        else if (drumKit === 2) {
+            kick3(time, audioCtx, drumGain);
+        }
     }
 
-    
+    // play snare
     function playSnare(time) {
-        let noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
-        let output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < output.length; i++) {
-            output[i] = Math.random() * 2 - 1; // fill buffer with white noise
+        if (drumKit === 0) {
+            snare1(time, audioCtx, drumGain);
         }
-        
-        let noise = audioCtx.createBufferSource();
-        noise.buffer = noiseBuffer;
-    
-        let noiseFilter = audioCtx.createBiquadFilter();
-        noiseFilter.type = 'highpass';
-        noiseFilter.frequency.value = 1000;
-        noise.connect(noiseFilter);
-    
-        let noiseEnvelope = audioCtx.createGain();
-        noiseFilter.connect(noiseEnvelope);
-        noiseEnvelope.connect(drumGain); 
-    
-        noiseEnvelope.gain.setValueAtTime(1, time);
-        noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
-    
-        noise.start(time);
-        noise.stop(time + 0.2);
+        else if (drumKit === 1) {
+            snare2(time, audioCtx, drumGain);
+        }
+        else if (drumKit === 2) {
+            snare3(time, audioCtx, drumGain);
+        }
     }
-    
+
+    // play hihat
     function playHiHat(time) {
-        let highPassFilter = audioCtx.createBiquadFilter();
-        highPassFilter.type = 'highpass';
-        highPassFilter.frequency.value = 5000;
-    
-        let whiteNoise = audioCtx.createBufferSource();
-        let bufferSize = audioCtx.sampleRate; // 1 second of noise
-        let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        let output = buffer.getChannelData(0);
-    
-        for (let i = 0; i < bufferSize; i++) {
-            output[i] = Math.random() * 2 - 1; // white noise
+        if (drumKit === 0) {
+            hihat1(time, audioCtx, drumGain);
         }
-    
-        whiteNoise.buffer = buffer;
-        whiteNoise.loop = true;
-        whiteNoise.connect(highPassFilter);
-    
-        let gainNode = audioCtx.createGain();
-        highPassFilter.connect(gainNode);
-        gainNode.connect(drumGain); 
-    
-        gainNode.gain.setValueAtTime(1, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.05); // quick decay for the sharp "hit" sound
-    
-        whiteNoise.start(time);
-        whiteNoise.stop(time + 0.05);
+        else if (drumKit === 1) {
+            hihat2(time, audioCtx, drumGain);
+        }
+        else if (drumKit === 2) {
+            hihat3(time, audioCtx, drumGain);
+        }
     }
-    
+
+    // play tom
     function playTom(time) {
-        let oscillator = audioCtx.createOscillator();
-        let gainNode = audioCtx.createGain();
-    
-        let lowpassFilter = audioCtx.createBiquadFilter();
-        lowpassFilter.type = "lowpass";
-        lowpassFilter.frequency.value = 800; // tom "body" resonance
-    
-        oscillator.connect(lowpassFilter);
-        lowpassFilter.connect(gainNode);
-        gainNode.connect(drumGain);
-        oscillator.frequency.setValueAtTime(120, time); // start frequency
-        oscillator.frequency.exponentialRampToValueAtTime(80, time + 0.2); // end frequency for pitch drop
-    
-        gainNode.gain.setValueAtTime(1, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.4); // volume decay
-    
-        oscillator.start(time);
-        oscillator.stop(time + 0.45); 
-    
-        gainNode.gain.setValueAtTime(0.01, time + 0.4);
-        gainNode.gain.linearRampToValueAtTime(0.001, time + 0.45); // smooth fade out to prevent clicking
+        if (drumKit === 0) {
+            tom1(time, audioCtx, drumGain);
+        }
+        else if (drumKit === 1) {
+            tom2(time, audioCtx, drumGain);
+        }
+        else if (drumKit === 2) {
+            tom3(time, audioCtx, drumGain);
+        }
     }
 
+    // play bell
     function playBell(time, frequency) {
-        // 90s drum machine sound effect
-        let oscillator = audioCtx.createOscillator();
-        let gainNode = audioCtx.createGain();
-        let highpassFilter = audioCtx.createBiquadFilter();
-        let lowpassFilter = audioCtx.createBiquadFilter();
-
-        highpassFilter.type = 'highpass';
-        highpassFilter.frequency.value = 1000;
-
-        lowpassFilter.type = 'lowpass';
-        lowpassFilter.frequency.value = 1000;
-
-        oscillator.connect(highpassFilter);
-        highpassFilter.connect(lowpassFilter);
-        lowpassFilter.connect(gainNode);
-        gainNode.connect(drumGain);
-        
-        oscillator.frequency.setValueAtTime(frequency, time);
-        oscillator.frequency.exponentialRampToValueAtTime(100, time + 1);
-
-        gainNode.gain.setValueAtTime(0.1, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 1);
-
-        oscillator.start(time);
-        oscillator.stop(time + 1);
-
-        gainNode.gain.setValueAtTime(0.01, time + 1);
-        gainNode.gain.linearRampToValueAtTime(0.001, time + 1.1);
+        if (drumKit === 0) {
+            bell1(time, frequency, audioCtx, drumGain);
+        }
+        else if (drumKit === 1) {
+            bell2(time, frequency, audioCtx, drumGain);
+        }
+        else if (drumKit === 2) {
+            bell3(time, frequency, audioCtx, drumGain);
+        }
     }
+
     
     function playSample(buffer, time) {
         const source = audioCtx.createBufferSource();
@@ -889,10 +834,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             //play tom or sample at tom
                             playSound('tom', audioCtx.currentTime);
                         }
-                        else if (document.getElementById('extra-drums').checked) {
-                            if (noteName === 'g') {
-                                playSound('bell', audioCtx.currentTime);
-                            }
+                        else if (noteName === 'g') {
+                            //play bell or sample at bell
+                            playSound('bell', audioCtx.currentTime);
                         }
                     }
                 }
