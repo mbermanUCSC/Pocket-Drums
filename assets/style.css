@@ -146,6 +146,28 @@ h1 {
     background-color: #bdbdbd;
 } */
 
+.volume-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: #723a7aa6;
+    border: 3px solid #757d65;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 5px #000000cc;
+    /* keep content on screen */
+    overflow: hidden;
+}
+
+.volume-controls p{
+    font-size: 20px;
+    margin: 5px;
+    font-family: 'VT323', monospace;
+    color: black;
+}
+
+
 .slider{
     -webkit-appearance: none;
     width: 30%;
@@ -169,6 +191,7 @@ h1 {
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0 0 10px 5px #000000;
+    margin-bottom: 20px;
 }
 
 .synth {
@@ -178,6 +201,7 @@ h1 {
     border-radius: 10px;
     box-shadow: 0 0 10px 5px #000000;
     display: none;
+    padding-bottom: 20px;
 }
 
 .synth .synth-control {
