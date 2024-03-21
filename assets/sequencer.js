@@ -860,6 +860,10 @@ document.addEventListener('DOMContentLoaded', function () {
         switch (command) {
             case 144: // note on
                 if (velocity > 0) {
+                    // if unfocused or audio context is suspended, disregard
+                    if (document.hidden || audioCtx.state === 'suspended') {
+                        return;
+                    }
                     // if synth screen is active, play note
                     if (document.querySelector('.synth').style.display === 'block') {
                         playNoteFromMIDI(note);
