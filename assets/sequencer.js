@@ -209,17 +209,17 @@ document.addEventListener('DOMContentLoaded', function () {
             synthGain.gain.value = 0.8;
             drumGain.gain.value = 0.8;
             // reset gain sliders
-            document.getElementById('master').value = 80;
+            // document.getElementById('master').value = 80;
             document.getElementById('synth').value = 80;
             document.getElementById('drums').value = 80;
         });
     });
 
     // master volume control
-    document.getElementById('master').addEventListener('input', function() {
-        const value = this.value;
-        masterGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
-    });
+    // document.getElementById('master').addEventListener('input', function() {
+    //     const value = this.value;
+    //     masterGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
+    // });
 
     // synth volume control
     document.getElementById('synth').addEventListener('input', function() {
