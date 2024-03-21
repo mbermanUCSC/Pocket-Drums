@@ -83,13 +83,14 @@ h1 {
     font-size: 20px;
     font-family: 'VT323', monospace;
     /* fixed size */
-    width: 60px;
+    width: 48px;
+    height: 48px;
 }
 
 /* playback button hover */
 .playback-controls button:hover {
     background-color: #6a6a6a;
-    scale: 1.12;
+    scale: 1.02;
 }
 
 /* number field */
