@@ -862,6 +862,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (velocity > 0) {
                     // if synth screen is active, play note
                     if (document.querySelector('.synth').style.display === 'block') {
+                        // scale down 2 octaves
+                        note -= 24;
                         playNoteFromMIDI(note);
                     }
                     else {
