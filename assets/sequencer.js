@@ -192,6 +192,26 @@ document.addEventListener('DOMContentLoaded', function () {
             // clear the synth keys
             keys = [];
             resetActiveKeys();
+
+            // clear the synth waveform
+            document.querySelectorAll('.waveform').forEach(button => {
+                button.style.opacity = '0.5';
+            });
+            document.getElementById('sine').style.opacity = '1';
+            waveform = 'sine';
+
+            // clear the swing
+            document.getElementById('swing').value = 0;
+            swingAmount = 0;
+
+            // reset all gains
+            masterGain.gain.value = 0.8;
+            synthGain.gain.value = 0.8;
+            drumGain.gain.value = 0.8;
+            // reset gain sliders
+            document.getElementById('master').value = 80;
+            document.getElementById('synth').value = 80;
+            document.getElementById('drums').value = 80;
         });
     });
 
