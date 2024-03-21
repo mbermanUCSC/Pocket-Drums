@@ -435,7 +435,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     playNote(note, nextNoteTime, 0);
                     inverted = false;
                 }
-                playNote(note, nextNoteTime+swingDelay, 1);
+                if (Math.random() > 0.2) {
+                    playNote(note, nextNoteTime+swingDelay, 1);
+                }
+                else {
+                    playNote(note, nextNoteTime+(swingDelay/2), 0);
+                }
             });
         }
 
