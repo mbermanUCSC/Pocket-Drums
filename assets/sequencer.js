@@ -20,8 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let waveform = 'sine';
     let keys = [];
     let touchSynth = false;
+    let synthMode = 'weighted';
 
     let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
+    let song = {};
 
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
@@ -84,12 +86,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     
-        // if there are notes in the key list, play a random note with swing
+        // if there are keys selected, sequence synth
         if (keys.length > 0 && !touchSynth) {
-            const note = keys[Math.floor(Math.random() * keys.length)];
-            const octave = Math.floor(Math.random() * 4) - 1;
-            let swingDelay = (currentBeat % 2 !== 0) ? (60.0 / bpm / division) * swingAmount : 0;
-            playNote(note, nextNoteTime + swingDelay, octave);
+            sequenceSynth(nextNoteTime);
         }
     
         updateCurrentBeatIndicator();
@@ -214,6 +213,9 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('master').value = 80;
             document.getElementById('synth').value = 80;
             document.getElementById('drums').value = 80;
+
+            // reset song
+            song = {};
         });
     });
 
@@ -328,7 +330,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // SAMPLER FUNCTIONS //
 
-
     document.querySelectorAll('.add-sample-button').forEach(button => {
         button.addEventListener('click', function() {
             let currentButton = this;
@@ -363,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // <img src="assets/drum_icon.png" class="page-button" alt="Drums" id="drum-icon">
     // <img src="assets/synth_icon.png" class="page-button" alt="Synth" id="synth-icon">
-
+    // page buttons
     document.querySelectorAll('.page-button').forEach(button => {
         button.addEventListener('click', function() {
             // get id of button
@@ -383,7 +384,132 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // all the synth stuff
+
+
+    // SYNTH FUNCTIONS //
+
+    // // class for the chords
+    // class Chord {
+    //     constructor(notes) {
+    //         this.notes = notes;
+    //         this.weight = 1.0;
+    //     }
+    // }
+
+    class Note {
+        constructor(note, octave) {
+            this.note = note;
+            this.octave = octave;
+            this.weight = 1.0;
+        }
+    }
+
+    function weightedSynth() {
+        let swingDelay = (currentBeat % 2 !== 0) ? (60.0 / bpm / division) * swingAmount : 0;
+        // for key in key create a key node and each with a synapse
+        reset = false;
+        for (let i = 0; i < keys.length; i++) {
+            // if not in song create a new note node
+            if (!song[keys[i]]) {
+                if (!reset){
+                    song = {};
+                    reset = true;
+                }
+                song[keys[i]] = new Note(keys[i], 0);
+            }
+        }
+        // sort the song by weight
+        let sortedSong = Object.values(song).sort((a, b) => b.weight - a.weight);
+
+        let rootNote = sortedSong[0].note;
+
+        //play root as a bass note
+        if (currentBeat % 2 === 0) {
+            playNote(rootNote, nextNoteTime, -1);
+        }
+        
+        // every 4 beats
+        if (currentBeat % 4 === 0) {
+        
+            // make chord from root note
+            // use the circle of fifths and the notes list to get the notes in the chord
+            // root, third, fifth
+            let chord = [rootNote, notes[(notes.indexOf(rootNote) + 4) % notes.length], notes[(notes.indexOf(rootNote) + 7) % notes.length]];
+
+            // play the chord
+            // if inverted bool
+            let inverted = Math.random() > 0.5;
+            chord.forEach((note, index) => {
+                if (inverted && Math.random() > 0.5){
+                    playNote(note, nextNoteTime, 0);
+                    inverted = false;
+                }
+                playNote(note, nextNoteTime+swingDelay, 1);
+            });
+        }
+
+        // semi-random melody
+        if (Math.random() > 0.8) {
+            // based on circle of fifths
+            let melody = [notes[(notes.indexOf(rootNote) + 2) % notes.length]]
+            melody.forEach(note => {
+                playNote(note, nextNoteTime+swingDelay, 2);
+            });
+
+        }
+
+        // randomly play bell at root note frequency
+        // if (Math.random() > 0.9) {
+        //     let frequency = getFrequency(rootNote, 2);
+        //     playBell(nextNoteTime+swingDelay, frequency);
+        // }
+
+
+        // update the weights
+        for (let i = 0; i < sortedSong.length; i++) {
+            // if root
+            if (sortedSong[i].note === rootNote) {
+                sortedSong[i].weight -= 0.9;
+            }
+            // if absolute value of index between notes in less than 2, subtract weight
+            else if (Math.abs(notes.indexOf(sortedSong[i].note) - notes.indexOf(rootNote)) < 2) {
+                sortedSong[i].weight -= 0.3;
+            }
+            else {
+                sortedSong[i].weight += 0.2;
+            }
+        }
+
+        // clamp the weights
+        for (let i = 0; i < sortedSong.length; i++) {
+            if (sortedSong[i].weight < 0.0) {
+                sortedSong[i].weight = 0.0;
+            }
+            else if (sortedSong[i].weight > 1.0) {
+                sortedSong[i].weight = 1.0;
+            }
+        }
+        
+    }
+
+
+    function randomSynth() {
+        const note = keys[Math.floor(Math.random() * keys.length)];
+        const octave = Math.floor(Math.random() * 4) - 1;
+        let swingDelay = (currentBeat % 2 !== 0) ? (60.0 / bpm / division) * swingAmount : 0;
+        playNote(note, nextNoteTime + swingDelay, octave);
+    }
+
+
+    function sequenceSynth(time) {
+        if (synthMode === 'random') {
+            randomSynth(time);
+        }
+        else if (synthMode === 'weighted') {
+            weightedSynth(time);
+        }
+    }
+
 
     function resetActiveKeys() {
         document.querySelectorAll('.key, .black-key').forEach(button => {
@@ -412,19 +538,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // <input type="checkbox" id="touch-synth"></input>
+    // touch synth checkbox
     document.getElementById('touch-synth').addEventListener('change', function() {
         touchSynth = this.checked;
         keys = [];
         resetActiveKeys();
 
     });
-    
-    // <img class='waveform' id='sine' src="assets/sine.png" alt="sine">
-    // <img class="waveform" id="square" src="assets/square.png" alt="square">
-    // <img class="waveform" id="sawtooth" src="assets/sawtooth.png" alt="sawtooth">
-    // <img class="waveform" id="triangle" src="assets/triangle.png" alt="triangle">
 
+    //  <input type="checkbox" id="weighted-synth">
+    // weighted synth checkbox
+    document.getElementById('weighted-synth').addEventListener('change', function() {
+        synthMode = this.checked ? 'random' : 'weighted';
+    }
+    );
+    
+    // waveform buttons
     document.querySelectorAll('.waveform').forEach(waveformButton => {
         // initially set all but the first button to 0.5 opacity
         if (waveformButton.id !== 'sine') {
@@ -440,39 +569,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
-
-
-    // SOUNDS FUNCTIONS //
-    // c, c#, d, d#, e, f, f#, g, g#, a, a#, b
-    function getFrequency(note, octave) {
-        const notes = {
-            c: 261.63,
-            'c#': 277.18,
-            d: 293.66,
-            'd#': 311.13,
-            e: 329.63,
-            f: 349.23,
-            'f#': 369.99,
-            g: 392.00,
-            'g#': 415.30,
-            a: 440.00,
-            'a#': 466.16,
-            b: 493.88
-        };
-        // scale so octave 1 is c1, ocvate 2 is c2, octave -1 is c0, etc
-        return notes[note] * Math.pow(2, octave - 1);
-    }
-
-    // transpose buttons
-    // <div class="synth-control">
-    //         <!-- octave buttons -->
-    //         <button class="transpose" id="down">-</button>
-    //         <h1 class="key">C</h1>
-    //         <button class="transpose" id="up">+</button>
-    //     </div>
-
-    document.querySelectorAll('.transpose').forEach(button => {
+     // transpose buttons
+     document.querySelectorAll('.transpose').forEach(button => {
         button.addEventListener('click', function() {
             // if no selected keys, toggle all butons in c major
             if (keys.length === 0) {
@@ -510,9 +608,32 @@ document.addEventListener('DOMContentLoaded', function () {
             
         });
     });
+
+
+
+
+
+    // SOUNDS FUNCTIONS //
+    // c, c#, d, d#, e, f, f#, g, g#, a, a#, b
+    function getFrequency(note, octave) {
+        const notes = {
+            c: 261.63,
+            'c#': 277.18,
+            d: 293.66,
+            'd#': 311.13,
+            e: 329.63,
+            f: 349.23,
+            'f#': 369.99,
+            g: 392.00,
+            'g#': 415.30,
+            a: 440.00,
+            'a#': 466.16,
+            b: 493.88
+        };
+        // scale so octave 1 is c1, ocvate 2 is c2, octave -1 is c0, etc
+        return notes[note] * Math.pow(2, octave - 1);
+    }
     
-
-
 
     // play note with scheduling
     function playNote(note, time, octave = 1) {
@@ -633,7 +754,7 @@ document.addEventListener('DOMContentLoaded', function () {
         gainNode.gain.linearRampToValueAtTime(0.001, time + 0.45); // smooth fade out to prevent clicking
     }
 
-    function playBell(time) {
+    function playBell(time, frequency) {
         // 90s drum machine sound effect
         let oscillator = audioCtx.createOscillator();
         let gainNode = audioCtx.createGain();
@@ -651,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function () {
         lowpassFilter.connect(gainNode);
         gainNode.connect(drumGain);
         
-        oscillator.frequency.setValueAtTime(500, time);
+        oscillator.frequency.setValueAtTime(frequency, time);
         oscillator.frequency.exponentialRampToValueAtTime(100, time + 1);
 
         gainNode.gain.setValueAtTime(0.1, time);
