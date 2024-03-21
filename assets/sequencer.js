@@ -849,6 +849,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (noteName === 'f') {
                 sound = 'tom';
             }
+            console.log(sound);
             playSound(sound, audioCtx.currentTime);
             
         } else {
