@@ -298,7 +298,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 }
-                else if (button.classList.contains('tom')){
+                // and extra drums are checked
+                else if (button.classList.contains('tom') || document.getElementById('extra-drums').checked){
                     if (Math.random() > 1) {
                         button.classList.add('button-active');
                     }
