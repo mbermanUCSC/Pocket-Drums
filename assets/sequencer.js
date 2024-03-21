@@ -556,11 +556,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (keys.includes(this.id)) {
                 this.classList.remove('button-active');
                 keys = keys.filter(key => key !== this.id);
+                
+                // if in song, remove it
+                if (song[this.id]) {
+                    delete song[this.id];
+                }
                 return;
-            }
-            // if in song, remove it
-            if (song[this.id]) {
-                delete song[this.id];
             }
             this.classList.add('button-active');
             const note = this.id;
