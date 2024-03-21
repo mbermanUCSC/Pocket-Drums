@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let keys = [];
     let touchSynth = false;
 
+    let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
+
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
     masterGain.connect(audioCtx.destination);
@@ -415,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
         touchSynth = this.checked;
         keys = [];
         resetActiveKeys();
+
     });
     
     // <img class='waveform' id='sine' src="assets/sine.png" alt="sine">
@@ -460,6 +463,55 @@ document.addEventListener('DOMContentLoaded', function () {
         // scale so octave 1 is c1, ocvate 2 is c2, octave -1 is c0, etc
         return notes[note] * Math.pow(2, octave - 1);
     }
+
+    // transpose buttons
+    // <div class="synth-control">
+    //         <!-- octave buttons -->
+    //         <button class="transpose" id="down">-</button>
+    //         <h1 class="key">C</h1>
+    //         <button class="transpose" id="up">+</button>
+    //     </div>
+
+    document.querySelectorAll('.transpose').forEach(button => {
+        button.addEventListener('click', function() {
+            // if no selected keys, toggle all butons in c major
+            if (keys.length === 0) {
+                keys = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
+                resetActiveKeys();
+                keys.forEach(key => {
+                    document.getElementById(key).classList.add('button-active');
+                });
+                document.querySelector('.transpose-key').textContent = 'C';
+                return;
+            }
+            resetActiveKeys();
+            // if up, add 1 to all keys
+            // for note in keys, get index of note in notes
+            // treat notes as a circular array
+            // update keys to be the notes at the new indices
+            if (this.id === 'up') {
+                keys = keys.map(key => {
+                    const index = notes.indexOf(key);
+                    return notes[(index + 1) % notes.length];
+                });
+            } else {
+                keys = keys.map(key => {
+                    const index = notes.indexOf(key);
+                    return notes[(index - 1 + notes.length) % notes.length];
+                });
+            }
+            keys.forEach(key => {
+                document.getElementById(key).classList.add('button-active');
+            });
+            
+            // set text to the new key
+            document.querySelector('.transpose-key').textContent = keys[0].toUpperCase();
+            
+            
+        });
+    });
+    
+
 
 
     // play note with scheduling

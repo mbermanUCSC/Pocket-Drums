@@ -281,6 +281,25 @@ h1 {
     scale: 1.12;
 }
 
+.synth .synth-control p {
+    font-size: 16px;
+    font-family: 'VT323', monospace;
+    color: black;
+}
+
+.synth .transpose {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
+    font-size: 20px;
+    text-align: center;
+    background-color: #b5b385;
+    font-family: 'VT323', monospace;
+    box-shadow: 0 0 10px 5px #0000003b;
+    width: 100px;
+}
+
 
 .nav-bar{
     display: flex;
