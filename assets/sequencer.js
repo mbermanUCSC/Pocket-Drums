@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let waveform = 'sine';
     let keys = [];
+    let touchSynth = false;
 
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
@@ -356,6 +357,13 @@ document.addEventListener('DOMContentLoaded', function () {
     
     document.querySelectorAll('.key, .black-key').forEach(button => {
         button.addEventListener('click', function() {
+            if (touchSynth) {
+                resetActiveKeys()
+                this.classList.add('button-active');
+                const note = this.id;
+                playNote(note, audioCtx.currentTime);
+                return;
+            }
             // if key in keys, remove it
             if (keys.includes(this.id)) {
                 this.classList.remove('button-active');
@@ -366,6 +374,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const note = this.id;
             keys.push(note);
         });
+    });
+
+    // <input type="checkbox" id="touch-synth"></input>
+    document.getElementById('touch-synth').addEventListener('change', function() {
+        touchSynth = this.checked;
+        resetActiveKeys();
     });
     
     // <img class='waveform' id='sine' src="assets/sine.png" alt="sine">
