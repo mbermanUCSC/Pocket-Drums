@@ -384,7 +384,7 @@ h1 {
 }
 
 .synth .transpose {
-    padding: 10px;
+    padding: 4px;
     margin: 5px;
     border-radius: 5px;
     border: none;
@@ -393,6 +393,6 @@ h1 {
     background-color: #b5b385;
     font-family: 'VT323', monospace;
     box-shadow: 0 0 10px 5px #0000003b;
-    width: 100px;
+    width: 70px;
 }
 
