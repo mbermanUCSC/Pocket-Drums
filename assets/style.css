@@ -201,7 +201,7 @@ h1 {
     border-radius: 10px;
     box-shadow: 0 0 10px 5px #000000;
     display: none;
-    padding-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .synth .synth-control {
