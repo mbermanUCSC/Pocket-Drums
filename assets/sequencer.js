@@ -870,16 +870,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         const noteIndex = note % 12;
                         const noteName = notes[noteIndex];
                         if (noteName === 'c') {
-                            playKick(audioCtx.currentTime);
+                            //play kick or sample at kick
+                            playSound('kick', audioCtx.currentTime);
                         }
                         else if (noteName === 'd') {
-                            playSnare(audioCtx.currentTime);
+                            //play snare or sample at snare
+                            playSound('snare', audioCtx.currentTime);
                         }
                         else if (noteName === 'e') {
-                            playHiHat(audioCtx.currentTime);
+                            //play hihat or sample at hihat
+                            playSound('hihat', audioCtx.currentTime);
                         }
                         else if (noteName === 'f') {
-                            playTom(audioCtx.currentTime);
+                            //play tom or sample at tom
+                            playSound('tom', audioCtx.currentTime);
                         }
                     }
                 }
