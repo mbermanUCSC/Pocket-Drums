@@ -832,25 +832,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const noteIndex = note % 12;
         const octave = Math.floor(note / 12) - 1;
         const noteName = notes[noteIndex];
-        // if current screen is synth, play note
-        // if current screen is sequencer, play sound
-        if (document.querySelector('.synth').style.display === 'block') {
-            playNoteFromMIDI(noteName, octave);
-        } else {
-            // c = kick, d = snare, e = hihat, f = tom
-            console.log(noteName);
-            let sound;
-            if (noteName === 'c') {
-                sound = 'kick';
-            } else if (noteName === 'd') {
-                sound = 'snare';
-            } else if (noteName === 'e') {
-                sound = 'hihat';
-            } else if (noteName === 'f') {
-                sound = 'tom';
-            }
-            playSound(sound, audioCtx.currentTime);
-        }
+        playNote(noteName, audioCtx.currentTime, octave);
     }
 
     // midi listener
@@ -878,7 +860,28 @@ document.addEventListener('DOMContentLoaded', function () {
         switch (command) {
             case 144: // note on
                 if (velocity > 0) {
-                    playNoteFromMIDI(note);
+                    // if synth screen is active, play note
+                    if (document.querySelector('.synth').style.display === 'block') {
+                        playNoteFromMIDI(note);
+                    }
+                    else {
+                        // c = kick, d = snare, e = hihat, f = tom
+                        // disregard octave
+                        const noteIndex = note % 12;
+                        const noteName = notes[noteIndex];
+                        if (noteName === 'c') {
+                            playKick(audioCtx.currentTime);
+                        }
+                        else if (noteName === 'd') {
+                            playSnare(audioCtx.currentTime);
+                        }
+                        else if (noteName === 'e') {
+                            playHiHat(audioCtx.currentTime);
+                        }
+                        else if (noteName === 'f') {
+                            playTom(audioCtx.currentTime);
+                        }
+                    }
                 }
                 break;
             case 128: // note off
