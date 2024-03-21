@@ -328,7 +328,7 @@ h1 {
     font-family: 'VT323', monospace;
     /* fixed size */
     width: 60px;
-    height: 90px;
+    height: 120px;
 }
 
 .synth-control .black-key {
@@ -343,7 +343,7 @@ h1 {
     font-family: 'VT323', monospace;
     /* fixed size */
     width: 60px;
-    height: 90px;
+    height: 120px;
 
     margin-top: -2px;
     box-shadow: 0 0 10px 5px #0000003b;
