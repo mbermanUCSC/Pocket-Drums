@@ -428,14 +428,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function weightedSynth() {
         let swingDelay = (currentBeat % 2 !== 0) ? (60.0 / bpm / division) * swingAmount : 0;
         // for key in key create a key node and each with a synapse
-        reset = false;
         for (let i = 0; i < keys.length; i++) {
-            // if not in song create a new note node
             if (!song[keys[i]]) {
-                if (!reset){
-                    song = {};
-                    reset = true;
-                }
                 song[keys[i]] = new Note(keys[i], 0);
             }
         }
@@ -556,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (keys.includes(this.id)) {
                 this.classList.remove('button-active');
                 keys = keys.filter(key => key !== this.id);
-                
+
                 // if in song, remove it
                 if (song[this.id]) {
                     delete song[this.id];
@@ -615,6 +609,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById(key).classList.add('button-active');
                 });
                 document.querySelector('.transpose-key').textContent = 'C';
+
                 return;
             }
             resetActiveKeys();
@@ -636,7 +631,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // set text to the new key
             document.querySelector('.transpose-key').textContent = keys[0].toUpperCase();
-            
+            song = {};
             
         });
     });
