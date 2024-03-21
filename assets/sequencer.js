@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentBeat = 0;
     let bpm = 120;
     let division = 2;
+    let swingAmount = 0.0; 
     const notesInQueue = []; // tracks the notes that are scheduled
     let requestID;
     let bpmLocked = false;
@@ -54,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.sequence button').forEach(button => {
             button.classList.remove('current-beat');
         });
-    
+
         sequences.forEach(sequence => {
             const buttons = sequence.querySelectorAll('button');
             if (buttons[currentBeat]) {
@@ -69,26 +70,34 @@ document.addEventListener('DOMContentLoaded', function () {
         sequences.forEach((seq, index) => {
             const soundButtons = seq.querySelectorAll('button');
             const sound = soundButtons[currentBeat].classList.contains('button-active') ? seq.dataset.sound : null;
+    
+            // Calculate swing delay
+            let swingDelay = 0;
+            if (currentBeat % 2 !== 0) { // Apply swing to every second beat
+                swingDelay = (60.0 / bpm / division) * swingAmount;
+            }
+    
             if (sound) {
-                playSound(sound, nextNoteTime);
+                playSound(sound, nextNoteTime + swingDelay);
             }
         });
-
-        // if there are notes in the key list, play a random note
+    
+        // if there are notes in the key list, play a random note with swing
         if (keys.length > 0 && !touchSynth) {
             const note = keys[Math.floor(Math.random() * keys.length)];
-            // randomly choose an octave # -1 to 3
             const octave = Math.floor(Math.random() * 4) - 1;
-            playNote(note, nextNoteTime, octave);
+            let swingDelay = (currentBeat % 2 !== 0) ? (60.0 / bpm / division) * swingAmount : 0;
+            playNote(note, nextNoteTime + swingDelay, octave);
         }
     
-
         updateCurrentBeatIndicator();
-
-        const secondsPerBeat = 60.0 / bpm/division;
+    
+        // Do not add swing delay to nextNoteTime here, it's only applied when scheduling notes
+        const secondsPerBeat = 60.0 / bpm / division;
         nextNoteTime += secondsPerBeat;
         currentBeat = (currentBeat + 1) % sequences[0].querySelectorAll('button').length;
     }
+    
 
     function scheduler() {
         if (!isPlaying) return;
@@ -287,6 +296,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // checkbox for division
     document.getElementById('division').addEventListener('change', function() {
         division = this.checked ? 4 : 2;
+    });
+
+    // swing slider
+    document.getElementById('swing').addEventListener('input', function() {
+        swingAmount = this.value / 100;
     });
 
 
