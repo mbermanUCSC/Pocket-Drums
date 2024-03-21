@@ -182,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // clear division
             document.getElementById('division').checked = false;
+            division = 2;
 
             // clear any current sound in the buffer (dont close the audio context)
             activeSources.forEach(source => {
