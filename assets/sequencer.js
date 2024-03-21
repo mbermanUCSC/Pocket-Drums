@@ -855,15 +855,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getMIDIMessage(midiMessage) {
         const command = midiMessage.data[0];
-        const note = midiMessage.data[1];
+        const note = midiMessage.data[1] - 24; // subtract 24 to get the correct octave (-2)
         const velocity = (midiMessage.data.length > 2) ? midiMessage.data[2] : 0;
         switch (command) {
             case 144: // note on
                 if (velocity > 0) {
                     // if synth screen is active, play note
                     if (document.querySelector('.synth').style.display === 'block') {
-                        // scale down 2 octaves
-                        note -= 24;
                         playNoteFromMIDI(note);
                     }
                     else {
