@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (sound === "snare") playSnare(time);
         else if (sound === "hihat") playHiHat(time);
         else if (sound === "tom") playTom(time);
+        else if (sound === "bell") playBell(time, getFrequency(document.querySelector('.transpose-key').textContent.toLowerCase(), 2));
+
         else if (sound === "bell") playBell(time);
     }
 
@@ -383,6 +385,34 @@ document.addEventListener('DOMContentLoaded', function () {
             input.click();
         });
     });
+
+    document.getElementById('extra-drums').addEventListener('change', function() {
+        const extraDrums = document.querySelector('.extra-drums');
+        if (this.checked) {
+            extraDrums.style.display = 'block';
+        } else {
+            extraDrums.style.display = 'none';
+            // remove the samples from the samples object
+            for (let key in samples) {
+                if (key !== 'kick' && key !== 'snare' && key !== 'hihat') {
+                    delete samples[key];
+                }
+            }
+            // remove the selected seqeunce buttons
+            // for every row past the first 4, remove the buttons
+            sequences.forEach((sequence, index) => {
+                if (index > 3) {
+                    sequence.querySelectorAll('button').forEach(button => {
+                        button.classList.remove('button-active');
+                    });
+                }
+            });
+        }
+    });
+
+    // set the initial state of the extra drums
+    document.getElementById('extra-drums').checked = false;
+    document.querySelector('.extra-drums').style.display = 'none';
 
 
     // SYNTH FUNCTIONS //
