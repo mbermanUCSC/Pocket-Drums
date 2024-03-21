@@ -885,6 +885,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             //play tom or sample at tom
                             playSound('tom', audioCtx.currentTime);
                         }
+                        else if (document.getElementById('extra-drums').checked) {
+                            if (noteName === 'g') {
+                                playSound('bell', audioCtx.currentTime);
+                            }
+                        }
                     }
                 }
                 break;
