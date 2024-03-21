@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
+
     // NOTE SCHEDULING FUNCTIONS //
 
     function scheduleNote() {
@@ -125,6 +126,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+
+    
 
     // SEQUENCER CONTROLS //
 
@@ -327,6 +330,26 @@ document.addEventListener('DOMContentLoaded', function () {
         swingAmount = this.value / 100;
     });
 
+    // page buttons
+    document.querySelectorAll('.page-button').forEach(button => {
+        button.addEventListener('click', function() {
+            // get id of button
+            const id = this.id;
+            if (id === 'drum-icon') {
+                document.querySelector('.sequencer').style.display = 'block';
+                document.querySelector('.synth').style.display = 'none';
+            } else if (id === 'synth-icon') {
+                document.querySelector('.sequencer').style.display = 'none';
+                document.querySelector('.synth').style.display = 'block';
+            }
+            // set opacity to 1
+            document.querySelectorAll('.page-button').forEach(button => {
+                button.style.opacity = '0.5';
+            });
+            this.style.opacity = '1';
+        });
+    });
+
 
     // SAMPLER FUNCTIONS //
 
@@ -362,39 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // <img src="assets/drum_icon.png" class="page-button" alt="Drums" id="drum-icon">
-    // <img src="assets/synth_icon.png" class="page-button" alt="Synth" id="synth-icon">
-    // page buttons
-    document.querySelectorAll('.page-button').forEach(button => {
-        button.addEventListener('click', function() {
-            // get id of button
-            const id = this.id;
-            if (id === 'drum-icon') {
-                document.querySelector('.sequencer').style.display = 'block';
-                document.querySelector('.synth').style.display = 'none';
-            } else if (id === 'synth-icon') {
-                document.querySelector('.sequencer').style.display = 'none';
-                document.querySelector('.synth').style.display = 'block';
-            }
-            // set opacity to 1
-            document.querySelectorAll('.page-button').forEach(button => {
-                button.style.opacity = '0.5';
-            });
-            this.style.opacity = '1';
-        });
-    });
-
-
-
     // SYNTH FUNCTIONS //
-
-    // // class for the chords
-    // class Chord {
-    //     constructor(notes) {
-    //         this.notes = notes;
-    //         this.weight = 1.0;
-    //     }
-    // }
 
     class Note {
         constructor(note, octave) {
@@ -543,7 +534,10 @@ document.addEventListener('DOMContentLoaded', function () {
         touchSynth = this.checked;
         keys = [];
         resetActiveKeys();
-
+        // set the transpose buttons to opacity 0.5 if touch synth is checked, else 1
+        document.querySelectorAll('.transpose').forEach(button => {
+            button.style.opacity = this.checked ? '0.5' : '1';
+        });
     });
 
     //  <input type="checkbox" id="weighted-synth">
@@ -573,6 +567,7 @@ document.addEventListener('DOMContentLoaded', function () {
      document.querySelectorAll('.transpose').forEach(button => {
         button.addEventListener('click', function() {
             // if no selected keys, toggle all butons in c major
+            if (touchSynth) return;
             if (keys.length === 0) {
                 keys = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
                 resetActiveKeys();
@@ -583,10 +578,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             resetActiveKeys();
-            // if up, add 1 to all keys
-            // for note in keys, get index of note in notes
-            // treat notes as a circular array
-            // update keys to be the notes at the new indices
+            // transpose the keys +1 or -1
             if (this.id === 'up') {
                 keys = keys.map(key => {
                     const index = notes.indexOf(key);
@@ -614,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // SOUNDS FUNCTIONS //
-    // c, c#, d, d#, e, f, f#, g, g#, a, a#, b
+
     function getFrequency(note, octave) {
         const notes = {
             c: 261.63,
