@@ -834,11 +834,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const noteName = notes[noteIndex];
         // if current screen is synth, play note
         // if current screen is sequencer, play sound
-        if (document.querySelector('.synth').style.display === 'block') {
-            playNote(noteName, audioCtx.currentTime, octave);
-        } else {
+        if (document.querySelector('.synth').style.display === 'none') {
             // c = kick, d = snare, e = hihat, f = tom
+            // strip the octave from the note
+
             let sound;
+            
             if (noteName === 'c') {
                 sound = 'kick';
             } else if (noteName === 'd') {
@@ -849,6 +850,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 sound = 'tom';
             }
             playSound(sound, audioCtx.currentTime);
+            
+        } else {
+            playNote(noteName, audioCtx.currentTime, octave);
+            
         }
     }
 
