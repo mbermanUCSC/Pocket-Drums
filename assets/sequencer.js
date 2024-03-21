@@ -833,11 +833,23 @@ document.addEventListener('DOMContentLoaded', function () {
         const octave = Math.floor(note / 12) - 1;
         const noteName = notes[noteIndex];
         // if current screen is synth, play note
-        // if current screen is sequencer, play sound (sample or drum)
+        // if current screen is sequencer, play sound
         if (document.querySelector('.synth').style.display === 'block') {
             playNoteFromMIDI(noteName, octave);
         } else {
-            playSound(noteName, audioCtx.currentTime);
+            // c = kick, d = snare, e = hihat, f = tom
+            console.log(noteName);
+            let sound;
+            if (noteName === 'c') {
+                sound = 'kick';
+            } else if (noteName === 'd') {
+                sound = 'snare';
+            } else if (noteName === 'e') {
+                sound = 'hihat';
+            } else if (noteName === 'f') {
+                sound = 'tom';
+            }
+            playSound(sound, audioCtx.currentTime);
         }
     }
 
