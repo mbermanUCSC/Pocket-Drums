@@ -379,6 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // <input type="checkbox" id="touch-synth"></input>
     document.getElementById('touch-synth').addEventListener('change', function() {
         touchSynth = this.checked;
+        keys = [];
         resetActiveKeys();
     });
     
