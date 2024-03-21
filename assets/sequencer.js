@@ -523,6 +523,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 keys = keys.filter(key => key !== this.id);
                 return;
             }
+            // if in song, remove it
+            if (song[this.id]) {
+                delete song[this.id];
+            }
             this.classList.add('button-active');
             const note = this.id;
             keys.push(note);
