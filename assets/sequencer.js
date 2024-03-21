@@ -828,4 +828,44 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
+    function playNoteFromMIDI(note) {
+        const noteIndex = note % 12;
+        const octave = Math.floor(note / 12) - 1;
+        const noteName = notes[noteIndex];
+        playNote(noteName, audioCtx.currentTime, octave);
+    }
+
+    // midi listener
+    // use usb midi or web midi
+    if (navigator.requestMIDIAccess) {
+        navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+    } else {
+        console.log("No MIDI support in your browser.");
+    }
+
+    function onMIDISuccess(midiAccess) {
+        for (var input of midiAccess.inputs.values()) {
+            input.onmidimessage = getMIDIMessage;
+        }
+    }
+
+    function onMIDIFailure() {
+        console.log("Could not access your MIDI devices.");
+    }
+
+    function getMIDIMessage(midiMessage) {
+        const command = midiMessage.data[0];
+        const note = midiMessage.data[1];
+        const velocity = (midiMessage.data.length > 2) ? midiMessage.data[2] : 0;
+        switch (command) {
+            case 144: // note on
+                if (velocity > 0) {
+                    playNoteFromMIDI(note);
+                }
+                break;
+            case 128: // note off
+                break;
+        }
+    }
+
 });
