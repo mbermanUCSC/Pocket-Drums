@@ -454,7 +454,7 @@ canvas {
     
 }
 
-.sampler .sampler-newsample{
+.sampler .sampler-record, .sampler-newsample{
     background-color: #989898;
     color: #494237;
     border: none;
@@ -469,8 +469,7 @@ canvas {
     height: 40px;
 }
 
-
-.sampler .sampler-newsample:hover {
+.sampler .sampler-record:hover, .sampler .sampler-newsample:hover{
     background-color: #6a6a6a;
     scale: 1.02;
 }

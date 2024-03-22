@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let sampleStart = 0;
     let sampleEnd = 0;
 
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false; // Track recording state
+
     let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
     let song = {};
 
@@ -265,6 +269,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // reset the transpose key
             document.querySelector('.transpose-key').textContent = 'C';
+
+            // Stop recording
+            mediaRecorder.stop();
+            mediaRecorder.stream.getTracks().forEach(track => track.stop()); // Stop the media stream
+            isRecording = false;
+            document.querySelector('.sampler-record').textContent = 'Rec';
+
+            // que a rest of the sampler in 1 second
+            activeSources.forEach(source => {
+                source.stop();
+            });
 
             // reset the sampler
             samplerSample = null;
@@ -859,7 +874,63 @@ document.addEventListener('DOMContentLoaded', function () {
     sampleStart = 0;
     sampleEnd = 1;
 
+    // <div class="sampler-control">
+    // <button class="sampler-record">Rec</button>
 
+    // recrd microphone when rec is clicked, save as sampler sample
+    // reset the sample completely
+    // stop recording when rec is clicked again
+    // will be played with the sampler trigger function
+    document.querySelector('.sampler-record').addEventListener('click', function() {
+        if (!isRecording) {
+            // Start recording
+            isRecording = true;
+            audioChunks = []; // Reset previous recordings
+            this.textContent = 'Stop'; // Update button text or use an indicator
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { 'type' : 'audio/ogg; codecs=opus' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = new Audio(audioUrl);
+                        // Load the recording into the sampler
+                        loadSampleIntoSampler(audioBlob);
+                    };
+                    mediaRecorder.start();
+                })
+                .catch(error => console.error("Error accessing the microphone: ", error));
+        } else {
+            // Stop recording
+            isRecording = false;
+            this.textContent = 'Rec'; // Reset button text or indicator
+            mediaRecorder.stop();
+            mediaRecorder.stream.getTracks().forEach(track => track.stop()); // Stop the media stream
+        }
+    });
+
+    function loadSampleIntoSampler(blob) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const arrayBuffer = event.target.result;
+            audioCtx.decodeAudioData(arrayBuffer, decodedData => {
+                samplerSample = decodedData; // Set the new sample
+                sampleStart = 0;
+                sampleEnd = 1;
+                document.getElementById('sample-start').value = 0;
+                document.getElementById('sample-end').value = 100;
+                drawWaveform(decodedData);
+
+            }, error => {
+                console.error("Error decoding audio data: ", error);
+            });
+        };
+        reader.readAsArrayBuffer(blob);
+    }
 
 
     // SOUNDS FUNCTIONS //
