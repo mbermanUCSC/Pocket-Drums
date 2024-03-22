@@ -155,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
             isPlaying = true;
             currentBeat = 0;
             nextNoteTime = audioCtx.currentTime + 0.05; // short delay before starting for accuracy (idk why)
+            playButton.textContent = '||';
             scheduler();
         }
     }
@@ -165,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelAnimationFrame(requestID);
             currentBeat = 0; 
             updateCurrentBeatIndicator(); 
-
+            playButton.textContent = '▶';
             // stop sampler
             activeSources.forEach(source => {
                 source.stop();
