@@ -414,3 +414,79 @@ h1 {
     color: black;
 }
 
+.sampler {
+    background-color: #736023a6;
+    border: 3px solid #4f3737;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 5px #000000;
+    display: none;
+    margin-bottom: 20px;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+    border: 3px solid #4f3737;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 5px #000000;
+    background-color: #00ffd01f;
+    margin-bottom: 20px;
+    width: 80%;
+    height: 200px;
+}
+
+.sampler .sampler-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #aa903aa6;
+    border: 3px solid #4f3737;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 5px #0000003b;
+    /* keep content on screen */
+    overflow: hidden;
+    
+}
+
+.sampler .sampler-newsample{
+    background-color: #989898;
+    color: #494237;
+    border: none;
+    padding: 2px;
+    margin: 4px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 20px;
+    font-family: 'VT323', monospace;
+    /* fixed size */
+    width: 60px;
+    height: 40px;
+}
+/* 
+<div class="sampler-control">
+            <button class="sampler-newsample">File</button>
+            <!-- pitch number field -->
+            <input type="number" id="pitch" value="0" min="-12" max="12">
+        </div> */
+
+.sampler .sampler-newsample:hover {
+    background-color: #6a6a6a;
+    scale: 1.02;
+}
+
+
+.sampler .sampler-control input[type="number"] {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
+    font-size: 20px;
+    text-align: center;
+    background-color: #b5b385;
+    font-family: 'VT323', monospace;
+    box-shadow: 0 0 10px 5px #0000003b;
+    width: 100px;
+}

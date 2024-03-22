@@ -25,6 +25,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let touchSynth = false;
     let synthMode = 'weighted';
 
+    let samplerSample = null;
+    let sampleStart = 0;
+    let sampleEnd = 0;
+
     let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
     let song = {};
 
@@ -35,12 +39,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const synthGain = audioCtx.createGain();
     const drumGain = audioCtx.createGain();
+    const samplerGain = audioCtx.createGain();
 
     synthGain.connect(masterGain);
     drumGain.connect(masterGain);
+    samplerGain.connect(masterGain);
 
     synthGain.gain.value = 0.8;
     drumGain.gain.value = 0.8;
+    samplerGain.gain.value = 0.8;
 
 
     
@@ -50,13 +57,16 @@ document.addEventListener('DOMContentLoaded', function () {
             playSample(samples[sound], time);
             return;
         }
+
         if (sound === "kick") playKick(time);
         else if (sound === "snare") playSnare(time);
         else if (sound === "hihat") playHiHat(time);
         else if (sound === "tom") playTom(time);
-
+        else if (sound === "sample") samplerTrigger(time);
+        
         else if (!document.getElementById('extra-drums').checked) return;
         else if (sound === "bell") playBell(time, getFrequency(document.querySelector('.transpose-key').textContent.toLowerCase(), 2));
+        
     }
 
     // highlight the current beat
@@ -151,6 +161,11 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelAnimationFrame(requestID);
             currentBeat = 0; 
             updateCurrentBeatIndicator(); 
+
+            // stop sampler
+            activeSources.forEach(source => {
+                source.stop();
+            });
         }
     }
     
@@ -218,6 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
             masterGain.gain.value = 0.8;
             synthGain.gain.value = 0.8;
             drumGain.gain.value = 0.8;
+            samplerGain.gain.value = 0.8;
             // reset gain sliders
             document.getElementById('master').value = 80;
             document.getElementById('synth').value = 80;
@@ -225,6 +241,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // reset song
             song = {};
+
+            // reset the extra drums checkbox
+            document.getElementById('extra-drums').checked = false;
+            document.querySelector('.extra-drums').style.display = 'none';
+
+            // reset the kit select
+            document.getElementById('kit-select').selectedIndex = 0;
+            drumKit = 0;
+
+            // reset the synth mode
+            document.getElementById('weighted-synth').checked = false;
+            synthMode = 'weighted';
+
+            // reset the touch synth
+            document.getElementById('touch-synth').checked = false;
+            touchSynth = false;
+
+            // reset the transpose buttons
+            document.querySelectorAll('.transpose').forEach(button => {
+                button.style.opacity = '1';
+            });
+
+            // reset the transpose key
+            document.querySelector('.transpose-key').textContent = 'C';
+
+            // reset the sampler
+            samplerSample = null;
+            sampleStart = 0;
+            sampleEnd = 1;
+
+            // reset the sample waveform
+            const canvas = document.getElementById('sample-waveform');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // reset the sample file text
+            document.querySelector('.sampler-file-txt').textContent = 'file';
+            document.getElementById('sample-start').value = 0;
+
+            // reset the pitch shift
+            document.getElementById('sample-pitch').value = 0;
         });
     });
 
@@ -246,6 +306,12 @@ document.addEventListener('DOMContentLoaded', function () {
         drumGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
     });
 
+    // sampler volume control
+    document.getElementById('sampler').addEventListener('input', function() {
+        const value = this.value;
+        samplerGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
+    });
+
     // shuffle button
     document.getElementById('shuffle').addEventListener('click', function() {
         // randomly set the bpm between 60 and 140
@@ -256,7 +322,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // reset all buttons
         sequences.forEach(sequence => {
             sequence.querySelectorAll('button').forEach(button => {
-                button.classList.remove('button-active');
+                // if not sample pad, reset
+                if (!button.classList.contains('sample')) {
+                    button.classList.remove('button-active');
+                }
             });
         });
 
@@ -314,7 +383,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 }
-                
                 i += 1;
             });
         });
@@ -345,9 +413,16 @@ document.addEventListener('DOMContentLoaded', function () {
             if (id === 'drum-icon') {
                 document.querySelector('.sequencer').style.display = 'block';
                 document.querySelector('.synth').style.display = 'none';
+                document.querySelector('.sampler').style.display = 'none';
             } else if (id === 'synth-icon') {
                 document.querySelector('.sequencer').style.display = 'none';
                 document.querySelector('.synth').style.display = 'block';
+                document.querySelector('.sampler').style.display = 'none';
+            }
+            else if (id === 'sampler-icon') {
+                document.querySelector('.sequencer').style.display = 'none';
+                document.querySelector('.synth').style.display = 'none';
+                document.querySelector('.sampler').style.display = 'block';
             }
             // set opacity to 1
             document.querySelectorAll('.page-button').forEach(button => {
@@ -360,11 +435,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // initially set the sequencer to display and the other icons to 0.5 opacity
     document.querySelector('.sequencer').style.display = 'block';
     document.querySelector('.synth').style.display = 'none';
+    document.querySelector('.sampler').style.display = 'none';
     document.getElementById('drum-icon').style.opacity = '1';
     document.getElementById('synth-icon').style.opacity = '0.5';
+    document.getElementById('sampler-icon').style.opacity = '0.5';
 
 
-    // SAMPLER FUNCTIONS //
+
+    // SEQUENCER SAMPLE + EXTRA DRUM FUNCTIONS //
 
     document.querySelectorAll('.add-sample-button').forEach(button => {
         button.addEventListener('click', function() {
@@ -425,15 +503,17 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('extra-drums').checked = false;
     document.querySelector('.extra-drums').style.display = 'none';
 
-    // kit selector
-    // <select id="kit-select">
-    //         <option value="default">Retro 1</option>
-    //         <option value="retro2">Retro 2</option>
-    //     </select>
+
+
+    // DRUM KIT FUNCTIONS //
+
     // set drumkit to the value of the select
     document.getElementById('kit-select').addEventListener('change', function() {
         drumKit = this.selectedIndex;
     });
+
+
+
 
     // SYNTH FUNCTIONS //
 
@@ -497,13 +577,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
         }
-
-        // randomly play bell at root note frequency
-        // if (Math.random() > 0.9) {
-        //     let frequency = getFrequency(rootNote, 2);
-        //     playBell(nextNoteTime+swingDelay, frequency);
-        // }
-
 
         // update the weights
         for (let i = 0; i < sortedSong.length; i++) {
@@ -595,7 +668,7 @@ document.addEventListener('DOMContentLoaded', function () {
         song = {};
     });
 
-    //  <input type="checkbox" id="weighted-synth">
+
     // weighted synth checkbox
     document.getElementById('weighted-synth').addEventListener('change', function() {
         synthMode = this.checked ? 'random' : 'weighted';
@@ -659,6 +732,139 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
+    // SAMPLER FUNCTIONS //
+
+    // open the file input when the button is clicked
+    document.querySelector('.sampler-newsample').addEventListener('click', function() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'audio/*';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            // if file is too large, alert the user (max size for large audio files is 10mb)
+            if (file.size > 10000000) {
+                alert('File is too large. Please use a file under 10mb.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = fileEvent => {
+                const arrayBuffer = fileEvent.target.result;
+                audioCtx.decodeAudioData(arrayBuffer, decodedData => {
+                    samplerSample = decodedData;
+                    // set the start and end of the sample
+                    sampleStart = 0;
+                    sampleEnd = 1;
+                    document.getElementById('sample-start').value = 0;
+                    document.getElementById('sample-end').value = 100;
+                    
+                    document.querySelector('.sampler-file-txt').textContent = file.name;
+                    drawWaveform(decodedData);
+
+                    document.getElementById('sample-pitch').value = 0;
+
+                    // reset the active sources
+                    activeSources.forEach(source => {
+                        source.stop();
+                    });
+
+                    // reset the active pads
+                    sequences.forEach(sequence => {
+                        sequence.querySelectorAll('button').forEach(button => {
+                            if (button.classList.contains('sample')) {
+                                button.classList.remove('button-active');
+                            }
+                        });
+                    });
+                }, error => {
+                    console.error("Error decoding audio data: ", error);
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        };
+        input.click();
+    });
+
+    // draw the waveform of the sample
+    function drawWaveform(buffer) {
+        const canvas = document.getElementById('sample-waveform');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const data = buffer.getChannelData(0);
+        ctx.clearRect(0, 0, width, height);
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+        for (let i = 0; i < data.length; i++) {
+            ctx.lineTo(i / data.length * width, (data[i] + 1) * height / 2);
+        }
+        ctx.stroke();
+
+        // add the bars for the start and end of the sample
+        const start = document.getElementById('sample-start').value / 100;
+        const end = document.getElementById('sample-end').value / 100;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(start * width, 0, 2, height);
+        ctx.fillRect(end * width, 0, 2, height);
+    }
+
+    // sample trigger (play from start)
+    // save it so we can stop it later
+    function samplerTrigger(time) {
+        if (!samplerSample) return;
+
+        
+        const source = audioCtx.createBufferSource();
+        // set the start and end of the sample
+        source.buffer = samplerSample;
+        source.loop = false;
+        source.loopStart = sampleStart * source.buffer.duration;
+        source.loopEnd = sampleEnd * source.buffer.duration;
+        source.connect(samplerGain);
+
+        const pitchShift = document.getElementById('sample-pitch').value;
+        source.detune.value = pitchShift * 100;
+
+        source.start(time, source.loopStart);
+        source.stop(time + (source.loopEnd - source.loopStart));
+        activeSources.push(source);
+        source.onended = function() {
+            activeSources = activeSources.filter(s => s !== source);
+        };
+
+        // stop other samples
+        activeSources.forEach(source => {
+            if (source !== activeSources[activeSources.length - 1]) {
+                // stop the other samples
+                source.stop(time);
+            }
+        });
+    }
+
+
+    // start should be left to end, end should be right to start
+    document.getElementById('sample-start').addEventListener('input', function() {
+        sampleStart = this.value / 100;
+        drawWaveform(samplerSample);
+    });
+
+    document.getElementById('sample-end').addEventListener('input', function() {
+        sampleEnd = this.value / 100;
+        drawWaveform(samplerSample);
+    });
+    
+    // set start and end initially to 0 and 100
+    document.getElementById('sample-start').value = 0;
+    document.getElementById('sample-end').value = 100;
+    sampleStart = 0;
+    sampleEnd = 1;
+
+
+    // <div class="sampler-control">
+    // <button class="sampler-newsample">File</button>
+    // <!-- pitch -->
+    // <input class="slider" type="range" id="sample-pitch" value="0" min="-12" max="12">
+    // <p>Pitch</p>
 
 
     // SOUNDS FUNCTIONS //
@@ -851,5 +1057,5 @@ document.addEventListener('DOMContentLoaded', function () {
                 break;
         }
     }
-
+    
 });
