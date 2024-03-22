@@ -893,6 +893,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.textContent = 'Stop'; // Update button text or use an indicator
             // set the background color to red
             this.style.backgroundColor = 'red';
+            // pitch reset
+            document.getElementById('sample-pitch').value = 0;
 
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
