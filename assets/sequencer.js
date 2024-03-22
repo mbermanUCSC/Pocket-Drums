@@ -357,6 +357,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // initially set the sequencer to display and the other icons to 0.5 opacity
+    document.querySelector('.sequencer').style.display = 'block';
+    document.querySelector('.synth').style.display = 'none';
+    document.getElementById('drum-icon').style.opacity = '1';
+    document.getElementById('synth-icon').style.opacity = '0.5';
+
 
     // SAMPLER FUNCTIONS //
 
