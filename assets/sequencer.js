@@ -1,4 +1,5 @@
-import { kick1, snare1, hihat1, tom1, bell1, kick2, snare2, hihat2, tom2, bell2, kick3, snare3, hihat3, tom3, bell3 } from './drumKits.js';
+import { kick1, snare1, hihat1, tom1, bell1, kick2, snare2, hihat2, tom2, bell2, kick3, snare3, hihat3, tom3, bell3,
+    kick4, snare4, hihat4, tom4, bell4 } from './drumKits.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -994,6 +995,9 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (drumKit === 2) {
             kick3(time, audioCtx, drumGain);
         }
+        else if (drumKit === 3) {
+            kick4(time, audioCtx, drumGain);
+        }
     }
 
     // play snare
@@ -1006,6 +1010,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         else if (drumKit === 2) {
             snare3(time, audioCtx, drumGain);
+        }
+        else if (drumKit === 3) {
+            snare4(time, audioCtx, drumGain);
         }
     }
 
@@ -1020,6 +1027,9 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (drumKit === 2) {
             hihat3(time, audioCtx, drumGain);
         }
+        else if (drumKit === 3) {
+            hihat4(time, audioCtx, drumGain);
+        }
     }
 
     // play tom
@@ -1033,6 +1043,9 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (drumKit === 2) {
             tom3(time, audioCtx, drumGain);
         }
+        else if (drumKit === 3) {
+            tom4(time, audioCtx, drumGain);
+        }
     }
 
     // play bell
@@ -1045,6 +1058,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         else if (drumKit === 2) {
             bell3(time, frequency, audioCtx, drumGain);
+        }
+        else if (drumKit === 3) {
+            bell4(time, frequency, audioCtx, drumGain);
         }
     }
 

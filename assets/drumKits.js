@@ -123,7 +123,7 @@ function bell1(time, frequency, audioCtx, drumGain) {
     oscillator.frequency.setValueAtTime(frequency, time);
     oscillator.frequency.exponentialRampToValueAtTime(100, time + 1);
 
-    gainNode.gain.setValueAtTime(0.1, time);
+    gainNode.gain.setValueAtTime(0.25, time);
     gainNode.gain.exponentialRampToValueAtTime(0.01, time + 1);
 
     oscillator.start(time);
@@ -509,6 +509,131 @@ function bell3(time, frequency, audioCtx, drumGain) {
 }
 
 
+// KIT 4 (jazz kit)
+
+function kick4(time, audioCtx, drumGain) {
+    let oscillator = audioCtx.createOscillator();
+    let gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(drumGain);
+
+    oscillator.frequency.setValueAtTime(60, time); // A lower, warmer starting frequency
+    oscillator.frequency.exponentialRampToValueAtTime(50, time + 0.3); // A gentle pitch drop
+
+    gainNode.gain.setValueAtTime(0.6, time); // Softer initial volume
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.6); // Longer, natural decay
+
+    oscillator.start(time);
+    oscillator.stop(time + 0.6);
+}
+
+
+function snare4(time, audioCtx, drumGain) {
+    let noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
+    let output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < output.length; i++) {
+        output[i] = Math.random() * 2 - 1;
+    }
+
+    let noise = audioCtx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    let noiseFilter = audioCtx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.value = 3000; // Focuses the noise to mimic a brush
+    noise.connect(noiseFilter);
+
+    let noiseEnvelope = audioCtx.createGain();
+    noiseFilter.connect(noiseEnvelope);
+    noiseEnvelope.connect(drumGain);
+
+    noiseEnvelope.gain.setValueAtTime(0.5, time); // Starts softer
+    noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, time + 0.2); // Quick, natural decay
+
+    noise.start(time);
+    noise.stop(time + 0.2);
+}
+
+
+function hihat4(time, audioCtx, drumGain) {
+    console.log("hihat4");
+    let highPassFilter = audioCtx.createBiquadFilter();
+    highPassFilter.type = 'highpass';
+    highPassFilter.frequency.value = 7000; // Sharper sound
+
+    let whiteNoise = audioCtx.createBufferSource();
+    let bufferSize = audioCtx.sampleRate * 0.02; // Shorter for a sharper "chick"
+    let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    let output = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+    }
+
+    whiteNoise.buffer = buffer;
+    whiteNoise.connect(highPassFilter);
+
+    let gainNode = audioCtx.createGain();
+    highPassFilter.connect(gainNode);
+    gainNode.connect(drumGain);
+
+    gainNode.gain.setValueAtTime(0.4, time); // Softer volume
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.03); // Quick decay
+
+    whiteNoise.start(time);
+    whiteNoise.stop(time + 0.03);
+}
+
+function tom4(time, audioCtx, drumGain) {
+    let oscillator = audioCtx.createOscillator();
+    let gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(drumGain);
+
+    oscillator.frequency.setValueAtTime(140, time); // Higher starting frequency
+    oscillator.frequency.exponentialRampToValueAtTime(120, time + 0.4); // Slight pitch drop
+
+    gainNode.gain.setValueAtTime(0.5, time); // Less aggressive
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.5); // Smooth, natural decay
+
+    oscillator.start(time);
+    oscillator.stop(time + 0.5); // Allow for a full, resonant tone before stopping
+}
+
+function bell4(time, frequency, audioCtx, drumGain) {
+    let bufferSize = audioCtx.sampleRate * 3; // Longer buffer for a sustained cymbal sound
+    let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    let output = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+    }
+
+    let whiteNoise = audioCtx.createBufferSource();
+    whiteNoise.buffer = buffer;
+
+    let bandPassFilter = audioCtx.createBiquadFilter();
+    bandPassFilter.type = 'bandpass';
+    bandPassFilter.frequency.value = 2000; // Center frequency to mimic a ride cymbal
+    bandPassFilter.Q.value = 1.0; // Quality factor to narrow the band, giving it a more metallic sound
+    whiteNoise.connect(bandPassFilter);
+
+    let gainNode = audioCtx.createGain();
+    bandPassFilter.connect(gainNode);
+    gainNode.connect(drumGain);
+
+    gainNode.gain.setValueAtTime(0.03, time); // Starting with a moderate presence
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 2.5); // Long decay to mimic the natural sustain of a ride cymbal
+
+    whiteNoise.start(time);
+    whiteNoise.stop(time + 3); // Stopping after the gain has decayed
+}
+
+
+
+
 
 export { kick1, snare1, hihat1, tom1, bell1, kick2, snare2, hihat2, tom2, bell2,
-    kick3, snare3, hihat3, tom3, bell3 }; // Export all drum functions
+    kick3, snare3, hihat3, tom3, bell3, kick4, snare4, hihat4, tom4, bell4 }; // Export all drum functions
