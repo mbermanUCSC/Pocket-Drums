@@ -1153,12 +1153,3 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
 });
-
-let lastTouchEnd = 0;
-document.addEventListener('touchend', function(event) {
-    const now = (new Date()).getTime();
-    if (now - lastTouchEnd <= 300) { // 300 ms is typically used to detect double-tap
-        event.preventDefault();
-    }
-    lastTouchEnd = now;
-}, false);
