@@ -557,7 +557,6 @@ function snare4(time, audioCtx, drumGain) {
 
 
 function hihat4(time, audioCtx, drumGain) {
-    console.log("hihat4");
     let highPassFilter = audioCtx.createBiquadFilter();
     highPassFilter.type = 'highpass';
     highPassFilter.frequency.value = 7000; // Sharper sound
