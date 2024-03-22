@@ -319,9 +319,12 @@ function createHiss(audioCtx, drumGain, time, duration) {
     let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     let output = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 0.02 - 0.01; // Low amplitude white noise for hiss
+        output[i] = Math.random() * 0.01 - 0.003; // Low amplitude white noise for hiss
     }
 
+    // fade out
+    output[bufferSize - 1] = 0;
+    
     let hiss = audioCtx.createBufferSource();
     hiss.buffer = buffer;
     hiss.connect(drumGain);
@@ -335,7 +338,7 @@ function createCrackle(audioCtx, drumGain, time, duration) {
     let output = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
         if (Math.random() < 0.05) { // Randomly intersperse louder clicks
-            output[i] = Math.random() * 0.05 - 0.025;
+            output[i] = Math.random() * 0.01 - 0.005;
         } else {
             output[i] = 0;
         }
@@ -348,18 +351,34 @@ function createCrackle(audioCtx, drumGain, time, duration) {
     crackle.stop(time + duration);
 }
 
+function createWarmthNode(audioCtx) {
+    let curve = new Float32Array(256);
+    for (let i = 0; i < 256; i++) {
+        let x = (i - 128) / 128;
+        // This curve can be adjusted for different saturation characteristics
+        curve[i] = (3 + 10) * x / (Math.abs(x) + 10 - x + 1);
+    }
+
+    let shaper = audioCtx.createWaveShaper();
+    shaper.curve = curve;
+    return shaper;
+}
+
 function kick3(time, audioCtx, drumGain) {
     let oscillator = audioCtx.createOscillator();
     let gainNode = audioCtx.createGain();
 
-    oscillator.connect(gainNode);
+    // Apply warmth effect
+    let warmthNode = createWarmthNode(audioCtx);
+    oscillator.connect(warmthNode);
+    warmthNode.connect(gainNode);
     gainNode.connect(drumGain);
 
-    oscillator.frequency.setValueAtTime(60, time);
-    oscillator.frequency.exponentialRampToValueAtTime(40, time + 0.1);
+    oscillator.frequency.setValueAtTime(60, time); // Lower frequency for warmth
+    oscillator.frequency.exponentialRampToValueAtTime(40, time + 0.1); // Quick pitch drop
 
     gainNode.gain.setValueAtTime(1, time);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.2); // Quick fade for punch
 
     oscillator.start(time);
     oscillator.stop(time + 0.2);
@@ -368,19 +387,24 @@ function kick3(time, audioCtx, drumGain) {
     createCrackle(audioCtx, drumGain, time, 0.2);
 }
 
+
 function snare3(time, audioCtx, drumGain) {
+    // Create a more complex noise texture
     let noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
     let output = noiseBuffer.getChannelData(0);
     for (let i = 0; i < output.length; i++) {
-        output[i] = Math.random() * 2 - 1;
+        // Mixing different types of noise for complexity
+        output[i] = (Math.random() * 2 - 1) * 0.7 + (Math.random() * 2 - 1) * 0.3;
     }
 
     let noise = audioCtx.createBufferSource();
     noise.buffer = noiseBuffer;
 
+    // Use a bandpass filter to focus the noise frequency
     let noiseFilter = audioCtx.createBiquadFilter();
-    noiseFilter.type = 'highpass';
-    noiseFilter.frequency.value = 1200;
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.value = 1500; // Center frequency for snare body
+    noiseFilter.Q.value = 0.7; // Narrow the band to focus the snare sound
     noise.connect(noiseFilter);
 
     let noiseEnvelope = audioCtx.createGain();
@@ -388,22 +412,23 @@ function snare3(time, audioCtx, drumGain) {
     noiseEnvelope.connect(drumGain);
 
     noiseEnvelope.gain.setValueAtTime(1, time);
-    noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+    noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, time + 0.1); // Tight decay for snare hit
 
     noise.start(time);
     noise.stop(time + 0.1);
 
-    createHiss(audioCtx, drumGain, time, 0.1);
+    createHiss(audioCtx, drumGain, time, 0.15);
     createCrackle(audioCtx, drumGain, time, 0.1);
 }
+
 
 function hihat3(time, audioCtx, drumGain) {
     let highPassFilter = audioCtx.createBiquadFilter();
     highPassFilter.type = 'highpass';
-    highPassFilter.frequency.value = 5000;
+    highPassFilter.frequency.value = 6000; // Increase to thin out the sound further
 
     let whiteNoise = audioCtx.createBufferSource();
-    let bufferSize = audioCtx.sampleRate * 0.1;
+    let bufferSize = audioCtx.sampleRate * 0.05; // Short buffer for crisp sound
     let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     let output = buffer.getChannelData(0);
 
@@ -412,79 +437,77 @@ function hihat3(time, audioCtx, drumGain) {
     }
 
     whiteNoise.buffer = buffer;
-    whiteNoise.loop = true;
     whiteNoise.connect(highPassFilter);
 
     let gainNode = audioCtx.createGain();
     highPassFilter.connect(gainNode);
     gainNode.connect(drumGain);
 
-    gainNode.gain.setValueAtTime(0.3, time);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+    gainNode.gain.setValueAtTime(0.3, time); // Adjust volume for presence
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.02); // Faster decay for less sustain
 
     whiteNoise.start(time);
-    whiteNoise.stop(time + 0.05);
+    whiteNoise.stop(time + 0.02);
 
-    createHiss(audioCtx, drumGain, time, 0.05);
-    createCrackle(audioCtx, drumGain, time, 0.05);
+    createHiss(audioCtx, drumGain, time, 0.02);
+    createCrackle(audioCtx, drumGain, time, 0.02);
 }
 
 function tom3(time, audioCtx, drumGain) {
     let oscillator = audioCtx.createOscillator();
-    let gainNode = audioCtx.createGain();
+    oscillator.type = 'triangle'; // A softer waveform for a more vintage feel
 
+    let gainNode = audioCtx.createGain();
     let lowpassFilter = audioCtx.createBiquadFilter();
     lowpassFilter.type = "lowpass";
-    lowpassFilter.frequency.value = 800;
+    lowpassFilter.frequency.value = 800; // Lower cutoff for warmth
+
+    // Apply slight detuning for vintage character
+    oscillator.detune.setValueAtTime(Math.random() * 10 - 5, time); // Random detune within +/- 5 cents
 
     oscillator.connect(lowpassFilter);
     lowpassFilter.connect(gainNode);
     gainNode.connect(drumGain);
-    oscillator.frequency.setValueAtTime(120, time);
-    oscillator.frequency.exponentialRampToValueAtTime(80, time + 0.2);
+
+    oscillator.frequency.setValueAtTime(100, time); // Lower frequency for a deeper tom sound
+    oscillator.frequency.exponentialRampToValueAtTime(60, time + 0.4); // Gradual pitch drop
 
     gainNode.gain.setValueAtTime(0.5, time);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.4);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.6); // Longer decay for body
 
     oscillator.start(time);
-    oscillator.stop(time + 0.5);
+    oscillator.stop(time + 0.6);
 
-    createHiss(audioCtx, drumGain, time, 0.5);
-    createCrackle(audioCtx, drumGain, time, 0.5);
+    createHiss(audioCtx, drumGain, time, 0.2);
+    createCrackle(audioCtx, drumGain, time, 0.2);
 }
 
 function bell3(time, frequency, audioCtx, drumGain) {
     let oscillator = audioCtx.createOscillator();
+    oscillator.type = 'sine'; // Pure tone for a clean bell sound
+
     let gainNode = audioCtx.createGain();
     let highpassFilter = audioCtx.createBiquadFilter();
-    let lowpassFilter = audioCtx.createBiquadFilter();
-
     highpassFilter.type = 'highpass';
-    highpassFilter.frequency.value = 1000;
-
-    lowpassFilter.type = 'lowpass';
-    lowpassFilter.frequency.value = 1000;
+    highpassFilter.frequency.value = 2000; // Focus on higher harmonics
 
     oscillator.connect(highpassFilter);
-    highpassFilter.connect(lowpassFilter);
-    lowpassFilter.connect(gainNode);
+    highpassFilter.connect(gainNode);
     gainNode.connect(drumGain);
-    
-    oscillator.frequency.setValueAtTime(frequency, time);
-    oscillator.frequency.exponentialRampToValueAtTime(100, time + 1);
+    // plus 2 semitones for a brighter bell sound
+    frequency = Math.pow(2, 2 / 12) * frequency;
+    oscillator.frequency.setValueAtTime(frequency, time); // Use the given frequency for the bell
 
-    gainNode.gain.setValueAtTime(0.1, time);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 1);
+    gainNode.gain.setValueAtTime(0.4, time); // Start with a gentle presence
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 1.0); // Long decay to mimic natural bell ringing
 
     oscillator.start(time);
-    oscillator.stop(time + 1);
+    oscillator.stop(time + 1.0);
 
-    gainNode.gain.setValueAtTime(0.01, time + 1);
-    gainNode.gain.linearRampToValueAtTime(0.001, time + 1.1);
-
-    createHiss(audioCtx, drumGain, time, 1);
-    createCrackle(audioCtx, drumGain, time, 1);
+    createHiss(audioCtx, drumGain, time, 0.3);
+    createCrackle(audioCtx, drumGain, time, 0.3);
 }
+
 
 
 export { kick1, snare1, hihat1, tom1, bell1, kick2, snare2, hihat2, tom2, bell2,
