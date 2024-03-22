@@ -860,11 +860,6 @@ document.addEventListener('DOMContentLoaded', function () {
     sampleEnd = 1;
 
 
-    // <div class="sampler-control">
-    // <button class="sampler-newsample">File</button>
-    // <!-- pitch -->
-    // <input class="slider" type="range" id="sample-pitch" value="0" min="-12" max="12">
-    // <p>Pitch</p>
 
 
     // SOUNDS FUNCTIONS //
@@ -993,7 +988,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // midi listener
-    // use usb midi or web midi
     if (navigator.requestMIDIAccess) {
         navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
     } else {

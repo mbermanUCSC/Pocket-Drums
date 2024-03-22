@@ -465,12 +465,7 @@ canvas {
     width: 60px;
     height: 40px;
 }
-/* 
-<div class="sampler-control">
-            <button class="sampler-newsample">File</button>
-            <!-- pitch number field -->
-            <input type="number" id="pitch" value="0" min="-12" max="12">
-        </div> */
+
 
 .sampler .sampler-newsample:hover {
     background-color: #6a6a6a;
