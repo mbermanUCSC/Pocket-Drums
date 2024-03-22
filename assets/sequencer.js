@@ -922,6 +922,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('sample-end').value = 100;
                 drawWaveform(decodedData);
 
+                document.querySelector('.sampler-file-txt').textContent = 'recording';
+
             }, error => {
                 console.error("Error decoding audio data: ", error);
             });
