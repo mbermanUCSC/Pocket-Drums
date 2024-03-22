@@ -276,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function () {
             isRecording = false;
             document.querySelector('.sampler-record').textContent = 'Rec';
 
-            // que a rest of the sampler in 1 second
             activeSources.forEach(source => {
                 source.stop();
             });
@@ -874,8 +873,6 @@ document.addEventListener('DOMContentLoaded', function () {
     sampleStart = 0;
     sampleEnd = 1;
 
-    // <div class="sampler-control">
-    // <button class="sampler-record">Rec</button>
 
     // recrd microphone when rec is clicked, save as sampler sample
     // reset the sample completely
