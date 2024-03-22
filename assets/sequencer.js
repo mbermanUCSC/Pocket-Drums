@@ -881,6 +881,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('.sampler-record').addEventListener('click', function() {
         if (!isRecording) {
             // Start recording
+            stopSequencer();
             isRecording = true;
             audioChunks = []; // Reset previous recordings
             this.textContent = 'Stop'; // Update button text or use an indicator
