@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // bpm input
     bpmInput.addEventListener('input', function() {
-        if (bpmInput.value <1) return;
+        if (bpmInput.value <3) return;
         bpm = Number(bpmInput.value);
     });
 
@@ -818,8 +818,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // add the bars for the start and end of the sample
         const start = document.getElementById('sample-start').value / 100;
         const end = document.getElementById('sample-end').value / 100;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        //green
+        ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
         ctx.fillRect(start * width, 0, 2, height);
+        // red
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
         ctx.fillRect(end * width, 0, 2, height);
     }
 
