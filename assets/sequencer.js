@@ -885,7 +885,10 @@ document.addEventListener('DOMContentLoaded', function () {
             stopSequencer();
             isRecording = true;
             audioChunks = []; // Reset previous recordings
+            // save previous color
             this.textContent = 'Stop'; // Update button text or use an indicator
+            // set the background color to red
+            this.style.backgroundColor = 'red';
 
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
@@ -909,8 +912,12 @@ document.addEventListener('DOMContentLoaded', function () {
             this.textContent = 'Rec'; // Reset button text or indicator
             mediaRecorder.stop();
             mediaRecorder.stream.getTracks().forEach(track => track.stop()); // Stop the media stream
+            this.style.backgroundColor = 'green'; // Reset the background color
         }
     });
+
+    // set to green initially
+    document.querySelector('.sampler-record').style.backgroundColor = 'green';
 
     function loadSampleIntoSampler(blob) {
         const reader = new FileReader();
