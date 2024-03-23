@@ -216,6 +216,11 @@ h1 {
     border-radius: 10px;
     box-shadow: 0 0 10px 5px #000000;
     margin-bottom: 20px;
+    width: 90%;
+    height: 90%;
+    /* center */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .drum-control {
@@ -318,6 +323,11 @@ h1 {
     box-shadow: 0 0 10px 5px #000000;
     display: none;
     margin-bottom: 20px;
+    width: 90%;
+    height: 90%;
+    /* center */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .synth .synth-control {
@@ -425,6 +435,11 @@ h1 {
     box-shadow: 0 0 10px 5px #000000;
     display: none;
     margin-bottom: 20px;
+    width: 90%;
+    height: 90%;
+    /* center */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 canvas {
@@ -486,4 +501,67 @@ canvas {
     font-family: 'VT323', monospace;
     box-shadow: 0 0 10px 5px #0000003b;
     width: 100px;
+}
+
+
+.looper {
+    background-color: #736023a6;
+    border: 3px solid #4f3737;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 5px #000000;
+    display: none;
+    margin-bottom: 20px;
+    width: 60%;
+    height:50%;
+    /* center */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+.looper .looper-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;    
+    background-color: #aa903aa6;
+    border: 3px solid #4f3737;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 5px #0000003b;
+    /* keep content on screen */
+    overflow: hidden;
+    /* button spacing (grid spacing) */
+    gap: 40px;
+    
+}
+
+.looper button {
+    /* big circular button */
+    background-color: #98c9ce;
+    color: #494237;
+    border: none;
+    padding: 2px;
+    margin: 4px;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 20px;
+    font-family: 'VT323', monospace;
+    /* fixed size */
+    width: 60px;
+    height: 60px;
+    /* retro syling */
+    box-shadow: 0 0 10px 5px #0000003b;
+    /* extra stylin */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+
+}
+
+.looper button:hover {
+    background-color: #6a6a6a;
+    scale: 1.02;
 }

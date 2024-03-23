@@ -177,40 +177,61 @@
         </section>
             
     </section>
-    <section class="sampler">
-        <h2>Sampler</h2>
-       
-        <div class="sampler-control">
-            <button class="sampler-record">Rec</button>
-            <button class="sampler-newsample">File</button>
-            <!-- pitch number field -->
-            <input type="number" id="sample-pitch" value="0" min="-12" max="12">
-            <p>Pitch</p>
-        </div>
 
-        <!-- placeholder for sample waveform -->
-        <canvas id="sample-waveform" width="800" height="100"></canvas>
-        <p class="sampler-file-txt">No file</p>
-        <div class="sampler-control">
-            <p>Start</p>
-            <input class="slider" type="range" id="sample-start" value="0" min="0" max="100">
-            
-            <input class="slider" type="range" id="sample-end" value="100" min="0" max="100">
-            <p>End&nbsp;&nbsp;</p>
-        </div>
+    <section class="audio-instruments">
+        
+        <section class="sampler">
+            <h2>Sampler</h2>
+        
+            <div class="sampler-control">
+                <button class="sampler-record">Rec</button>
+                <button class="sampler-newsample">File</button>
+                <!-- pitch number field -->
+                <input type="number" id="sample-pitch" value="0" min="-12" max="12">
+                <p>Pitch</p>
+            </div>
 
-        <!-- playback -->
-        <section class="sequence" data-sound="sample">
-            <button class="sample" id="button-0"></button>
-            <button class="sample" id="button-1"></button>
-            <button class="sample" id="button-2"></button>
-            <button class="sample" id="button-3"></button>
-            <button class="sample" id="button-4"></button>
-            <button class="sample" id="button-5"></button>
-            <button class="sample" id="button-6"></button>
-            <button class="sample" id="button-7"></button>
+            <!-- placeholder for sample waveform -->
+            <canvas id="sample-waveform" width="800" height="100"></canvas>
+            <p class="sampler-file-txt">No file</p>
+            <div class="sampler-control">
+                <p>Start</p>
+                <input class="slider" type="range" id="sample-start" value="0" min="0" max="100">
+                
+                <input class="slider" type="range" id="sample-end" value="100" min="0" max="100">
+                <p>End&nbsp;&nbsp;</p>
+            </div>
+
+            <!-- playback -->
+            <section class="sequence" data-sound="sample">
+                <button class="sample" id="button-0"></button>
+                <button class="sample" id="button-1"></button>
+                <button class="sample" id="button-2"></button>
+                <button class="sample" id="button-3"></button>
+                <button class="sample" id="button-4"></button>
+                <button class="sample" id="button-5"></button>
+                <button class="sample" id="button-6"></button>
+                <button class="sample" id="button-7"></button>
+            </section>
+        </section>
+
+        <section class="nav-bar">
+            <!-- image -->
+            <img src="assets/looper_icon.png" class="page-button" id="looper-icon" alt="Sampler">
+        </section>
+        
+
+        <section class="looper">
+            <h2>Looper</h2>
+            <!-- two big buttons, record and undo  -->
+            <canvas id="looper-waveform" width="800" height="100"></canvas>
+            <section class="looper-control">
+                <button class="looper-button" id="record">Rec</button>
+                <button class="looper-button" id="undo">Undo</button>
+            </section>
         </section>
     </section>
+
 
     <section class="volume-controls">
         <!-- volume slider for each sound -->
@@ -237,6 +258,7 @@
         <!-- link to github -->
         <a href="https://github.com/mbermanUCSC/Miles-Synth" target="_blank">View on GitHub</a>
         <p>-Miles Berman</p>
+        
 
 
     <!-- get js  -->

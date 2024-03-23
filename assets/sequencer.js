@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const notesInQueue = []; // tracks the notes that are scheduled
     let requestID;
     let bpmLocked = false;
+    let looperPinned = false;
 
     let samples = {};
     let activeSources = [];
@@ -34,6 +35,13 @@ document.addEventListener('DOMContentLoaded', function () {
     let audioChunks = [];
     let isRecording = false; // Track recording state
 
+
+    let looperSamples = [];
+    let combinedBuffer = null;
+    let looperTriggered = false;
+    let looperRecording = false;
+    let looperPlaying = false;
+
     let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
     let song = {};
 
@@ -42,18 +50,30 @@ document.addEventListener('DOMContentLoaded', function () {
     masterGain.connect(audioCtx.destination);
     masterGain.gain.value = 0.8; // master volume here
 
+    // bus for synth, drums, and sampler
+    const bus1 = audioCtx.createGain();
+    bus1.connect(masterGain);
+
     const synthGain = audioCtx.createGain();
     const drumGain = audioCtx.createGain();
     const samplerGain = audioCtx.createGain();
 
-    synthGain.connect(masterGain);
-    drumGain.connect(masterGain);
-    samplerGain.connect(masterGain);
+    synthGain.connect(bus1);
+    drumGain.connect(bus1);
+    samplerGain.connect(bus1);
 
     synthGain.gain.value = 0.8;
     drumGain.gain.value = 0.8;
     samplerGain.gain.value = 0.8;
 
+    const looperGain = audioCtx.createGain();
+    looperGain.connect(masterGain); 
+    looperGain.gain.value = 0.18; 
+
+
+    // Setup the destination for recording from the bus1 output
+    const destBus1 = audioCtx.createMediaStreamDestination();
+    bus1.connect(destBus1);
 
     
 
@@ -104,6 +124,10 @@ document.addEventListener('DOMContentLoaded', function () {
     
             if (sound) {
                 playSound(sound, nextNoteTime + swingDelay);
+            }
+
+            if (currentBeat === 0) {
+                looperTrigger(nextNoteTime);
             }
         });
     
@@ -274,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Stop recording
             mediaRecorder.stop();
-            mediaRecorder.stream.getTracks().forEach(track => track.stop()); // Stop the media stream
+            //mediaRecorder.stream.getTracks().forEach(track => track.stop()); // Stop the media stream
             isRecording = false;
             document.querySelector('.sampler-record').textContent = 'Rec';
 
@@ -301,6 +325,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // reset the pitch shift
             document.getElementById('sample-pitch').value = 0;
+
+            // reset the looper
+            killLooper();
         });
     });
 
@@ -430,31 +457,69 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector('.sequencer').style.display = 'block';
                 document.querySelector('.synth').style.display = 'none';
                 document.querySelector('.sampler').style.display = 'none';
+                if (looperPinned) {
+                    document.querySelector('.audio-instruments').style.display = 'block';
+                }
+                else {
+                    document.querySelector('.audio-instruments').style.display = 'none';
+                }
             } else if (id === 'synth-icon') {
                 document.querySelector('.sequencer').style.display = 'none';
                 document.querySelector('.synth').style.display = 'block';
                 document.querySelector('.sampler').style.display = 'none';
+                if (looperPinned) {
+                    document.querySelector('.audio-instruments').style.display = 'block';
+                }
+                else {
+                    document.querySelector('.audio-instruments').style.display = 'none';
+                }
             }
             else if (id === 'sampler-icon') {
                 document.querySelector('.sequencer').style.display = 'none';
                 document.querySelector('.synth').style.display = 'none';
+
+                document.querySelector('.audio-instruments').style.display = 'block';
                 document.querySelector('.sampler').style.display = 'block';
+                document.querySelector('.looper').style.display = 'block';
             }
-            // set opacity to 1
+            else if (id === 'looper-icon') {
+                looperPinned = !looperPinned;
+    
+                this.style.opacity = looperPinned ? '1' : '0.5';
+
+                // if synth showing
+                if (document.querySelector('.sampler').style.display === 'block') {
+                    return;
+                }
+
+                if (looperPinned) {
+                    document.querySelector('.audio-instruments').style.display = 'block';
+                }
+                else {
+                    document.querySelector('.audio-instruments').style.display = 'none';
+                }
+                return;
+            }
             document.querySelectorAll('.page-button').forEach(button => {
-                button.style.opacity = '0.5';
+                if (button.id !== 'looper-icon') {
+                    button.style.opacity = '0.5';
+                }
             });
             this.style.opacity = '1';
-        });
+        }
+        );
     });
 
     // initially set the sequencer to display and the other icons to 0.5 opacity
     document.querySelector('.sequencer').style.display = 'block';
     document.querySelector('.synth').style.display = 'none';
     document.querySelector('.sampler').style.display = 'none';
+    document.querySelector('.looper').style.display = 'none';
+    document.querySelector('.audio-instruments').style.display = 'none';
     document.getElementById('drum-icon').style.opacity = '1';
     document.getElementById('synth-icon').style.opacity = '0.5';
     document.getElementById('sampler-icon').style.opacity = '0.5';
+    document.getElementById('looper-icon').style.opacity = '0.5';
 
 
 
@@ -945,6 +1010,260 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         reader.readAsArrayBuffer(blob);
     }
+
+    // LOOPER FUNCTIONS //
+
+    // <section class="looper">
+    //     <h2>Looper</h2>
+    //     <!-- two big buttons, record and undo  -->
+    //     <canvas id="looper-waveform" width="800" height="100"></canvas>
+    //     <section class="looper-control">
+    //         <button class="looper-button" id="record">Record</button>
+    //         <button class="looper-button" id="undo">Undo</button>
+    //     </section>
+        
+    // </section>
+
+    // record button
+    document.getElementById('record').addEventListener('click', function() {
+        looperTriggered = !looperTriggered;
+        this.textContent = looperTriggered ? 'Stop' : 'Rec';
+        // color to yellow if recording
+        this.style.backgroundColor = looperTriggered ? 'yellow' : 'green';
+    });
+
+    // undo button
+    document.getElementById('undo').addEventListener('click', function() {
+        if (looperSamples.length > 0) {
+            looperSamples.pop();
+        }
+        if (looperSamples.length > 0) {
+            combineLoops();
+            drawLooperWaveform(combinedBuffer);
+        }
+        else {
+            combinedBuffer = null;
+            const canvas = document.getElementById('looper-waveform');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+        }
+        
+    });
+
+    function killLooper() {
+        looperRecording = false;
+        looperTriggered = false;
+        looperPlaying = false;
+        document.getElementById('record').textContent = 'Rec';
+        document.getElementById('record').style.backgroundColor = 'green';
+
+        // Reset the looper
+        looperSamples = [];
+        combinedBuffer = null;
+        const canvas = document.getElementById('looper-waveform');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.clearRect(0, 0, width, height);
+    }
+
+
+
+    // Function to start recording
+    // Function to start recording at the scheduled time
+    function startRecording(scheduledTime) {
+        if (!mediaRecorder || mediaRecorder.state === "inactive") {
+            const stream = destBus1.stream;
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.onstop = processRecording;
+
+            // Use the Web Audio API's currentTime and scheduledTime to determine delay
+            const delay = scheduledTime - audioCtx.currentTime;
+            if (delay > 0) {
+                // Delay the start to align with the scheduled time
+                setTimeout(() => {
+                    mediaRecorder.start();
+                    //console.log("Recording started at", scheduledTime, "with actual context time", audioCtx.currentTime);
+                    document.getElementById('record').textContent = 'Stop';
+                    document.getElementById('record').style.backgroundColor = 'red';
+                }, delay * 1000); // Convert to milliseconds
+            } else {
+                // If the scheduled time is in the past, start immediately
+                mediaRecorder.start();
+            }
+        }
+    }
+
+    // Function to stop recording at the scheduled time
+    function stopRecording(scheduledTime) {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+            const delay = scheduledTime - audioCtx.currentTime;
+            if (delay > 0) {
+                // Delay the stop to align with the scheduled time
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    //console.log("Recording stopped at", scheduledTime, "with actual context time", audioCtx.currentTime);
+                    document.getElementById('record').textContent = 'Rec';
+                    document.getElementById('record').style.backgroundColor = 'green';
+
+                }, delay * 1000); // Convert to milliseconds
+            } else {
+                // If the scheduled time is in the past, stop immediately
+                mediaRecorder.stop();
+            }
+        }
+    }
+
+
+    // Function to process the recording, convert it to an audio buffer, and add to loops
+    function processRecording() {
+        const audioBlob = new Blob(audioChunks, { 'type' : 'audio/ogg; codecs=opus' });
+        audioChunks = []; // Reset chunks for the next recording
+
+        const fileReader = new FileReader();
+        fileReader.onloadend = function() {
+            const arrayBuffer = this.result;
+            audioCtx.decodeAudioData(arrayBuffer, function(decodedData) {
+                // Add the decoded buffer to the list of loops
+                looperSamples.push(decodedData);
+                combineLoops(); // Combine loops after adding the new one
+                drawLooperWaveform(combinedBuffer);
+            });
+        };
+        fileReader.readAsArrayBuffer(audioBlob);
+    }
+
+    // Function to combine loops into a single buffer
+    // function combineLoops() {
+    //     // Assuming all buffers have the same sample rate and number of channels
+    //     const numberOfChannels = Math.min(...looperSamples.map(sample => sample.numberOfChannels));
+    //     const length = looperSamples.reduce((acc, sample) => acc + sample.length, 0);
+    //     combinedBuffer = audioCtx.createBuffer(numberOfChannels, length, audioCtx.sampleRate);
+
+
+    //     let offset = 0;
+    //     looperSamples.forEach(sample => {
+    //         for (let channel = 0; channel < numberOfChannels; channel++) {
+    //             // try to repeat the sample if it is shorter than the combined buffer
+    //             const source = sample.getChannelData(channel);
+    //             const destination = combinedBuffer.getChannelData(channel);
+    //             for (let i = 0; i < sample.length; i++) {
+    //                 destination[offset + i] += source[i];
+    //             }
+    //         }
+    //         offset += sample.length;
+    //     });
+    // }
+
+    // Function to combine loops by stacking them into one waveform
+    function combineLoops() {
+        if (looperSamples.length === 0) {
+            console.log("No loops to combine.");
+            return;
+        }
+    
+        // Find the longest sample duration to set as the length of the combined buffer
+        const maxLength = looperSamples.reduce((max, buffer) => Math.max(max, buffer.length), 0);
+        // Create a mono buffer
+        combinedBuffer = audioCtx.createBuffer(1, maxLength, audioCtx.sampleRate);
+    
+        // Mix each sample into the combined buffer, assuming the first channel for stereo samples
+        looperSamples.forEach(sample => {
+            const sampleData = sample.getChannelData(0); // Always use the first channel
+            const combinedData = combinedBuffer.getChannelData(0); // Mono channel
+            // Mix (add) the sample into the combined buffer
+            for (let i = 0; i < sample.length; i++) {
+                // If current sample is shorter than maxLength, make sure we don't go out of bounds
+                if (i < combinedData.length) {
+                    combinedData[i] += sampleData[i];
+                }
+            }
+        });
+    
+        // Optionally normalize the combined buffer to prevent clipping
+        normalizeBuffer(combinedBuffer);
+    }
+
+    // Function to normalize audio buffer to prevent clipping
+    function normalizeBuffer(buffer) {
+        let maxAmplitude = 0;
+        for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+            const data = buffer.getChannelData(channel);
+            for (let i = 0; i < data.length; i++) {
+                if (Math.abs(data[i]) > maxAmplitude) {
+                    maxAmplitude = Math.abs(data[i]);
+                }
+            }
+        }
+
+        if (maxAmplitude > 1) {
+            for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    data[i] /= maxAmplitude;
+                }
+            }
+        }
+    }
+
+
+    // Function to play combined buffer
+    function playCombinedBuffer(time) {
+        if (combinedBuffer) {
+            const source = audioCtx.createBufferSource();
+            source.buffer = combinedBuffer;
+            source.connect(looperGain); 
+            source.start(time);
+
+            source.onstart = function() {
+                looperPlaying = true;
+            };
+            source.onended = function() {
+                looperPlaying = false;
+            };
+        }
+    }
+
+    // Adjust looperTrigger to manage recording and playback
+    function looperTrigger(time) {
+        if (looperTriggered){
+            looperTriggered = false;
+            if (!looperRecording) {
+                startRecording(time);
+                looperRecording = true;
+            } else {
+                stopRecording(time);
+                looperRecording = false;
+            }
+        } 
+
+        if (looperSamples.length > 0 && !looperPlaying) {
+            playCombinedBuffer(time);
+        }
+    }
+
+    function drawLooperWaveform(buffer) {
+        const canvas = document.getElementById('looper-waveform');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const data = buffer.getChannelData(0);
+        ctx.clearRect(0, 0, width, height);
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+        for (let i = 0; i < data.length; i++) {
+            ctx.lineTo(i / data.length * width, (data[i] + 1) * height / 2);
+        }
+        ctx.stroke();
+    }
+
+
+
+
 
 
     // SOUNDS FUNCTIONS //
