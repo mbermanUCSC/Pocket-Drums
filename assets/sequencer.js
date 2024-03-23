@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let looperRecording = false;
     let looperLength = 0;
     let looperTime = 0;
+    let looperRecordingLength = 0;
 
     let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
     let song = {};
@@ -1043,6 +1044,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // undo button
     document.getElementById('undo').addEventListener('click', function() {
+        if (looperRecording) return;
         if (looperSamples.length > 0) {
             looperSamples.pop();
         }
@@ -1089,6 +1091,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // reset time
         looperTime = 0;
         looperLength = 0;
+
+        document.querySelector('.debug-info').textContent = '0';
     }
 
 
@@ -1171,10 +1175,6 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Find the longest sample duration to set as the length of the combined buffer
         const maxLength = looperSamples.reduce((max, buffer) => Math.max(max, buffer.length), 0);
-        const exactLengthInSeconds = maxLength / audioCtx.sampleRate;
-        const beatsPerSecond = bpm / (60*division);
-        const beatsPerLoop = exactLengthInSeconds * beatsPerSecond;
-        looperLength = Math.ceil(beatsPerLoop / division);
         // Create a mono buffer
         combinedBuffer = audioCtx.createBuffer(1, maxLength, audioCtx.sampleRate);
     
@@ -1234,24 +1234,38 @@ document.addEventListener('DOMContentLoaded', function () {
         if (looperTriggered){
             looperTriggered = false;
             if (!looperRecording) {
+                if (looperSamples.length === 0) {
+                    looperTime = 0;
+                    looperLength = 0;
+                }
                 startRecording(time);
                 looperRecording = true;
             } else {
                 stopRecording(time);
                 looperRecording = false;
+                if (looperRecordingLength > looperLength) {
+                    looperLength = looperRecordingLength;
+                }
+                looperRecordingLength = 0;
             }
         } 
 
+        if (looperRecording) {
+            looperRecordingLength ++;
+        }
+
         if (looperSamples.length > 0) {
             looperTime = looperTime % looperLength;
-            //<p class="debug-info">0</p>
             //set the debug info to the time and length
             document.querySelector('.debug-info').textContent = looperTime + ' / ' + looperLength;
-            console.log("time", looperTime, "length", looperLength);
+            //console.log("time", looperTime, "length", looperLength);
             if (looperTime === 0) {
                 playCombinedBuffer(time);
             }
             looperTime += 1;
+        }
+        else if (looperRecording && looperSamples.length === 0) {
+            looperLength ++;
         }
     }
 
