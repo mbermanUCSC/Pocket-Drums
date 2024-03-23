@@ -40,7 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let combinedBuffer = null;
     let looperTriggered = false;
     let looperRecording = false;
-    let looperPlaying = false;
+    let looperLength = 0;
+    let looperTime = 0;
 
     let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
     let song = {};
@@ -1058,7 +1059,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // solo button
     document.getElementById('solo').addEventListener('click', function() {
-        console.log('solo');
         // turn off every selected drum pad
         sequences.forEach(sequence => {
             sequence.querySelectorAll('button').forEach(button => {
@@ -1074,7 +1074,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function killLooper() {
         looperRecording = false;
         looperTriggered = false;
-        looperPlaying = false;
+
         document.getElementById('record').textContent = 'Rec';
         document.getElementById('record').style.backgroundColor = 'green';
 
@@ -1086,6 +1086,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const width = canvas.width;
         const height = canvas.height;
         ctx.clearRect(0, 0, width, height);
+
+        // reset time
+        looperTime = 0;
+        looperLength = 0;
     }
 
 
@@ -1168,6 +1172,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Find the longest sample duration to set as the length of the combined buffer
         const maxLength = looperSamples.reduce((max, buffer) => Math.max(max, buffer.length), 0);
+        looperLength = Math.ceil((maxLength / audioCtx.sampleRate) / (60 / bpm)/4);
         // Create a mono buffer
         combinedBuffer = audioCtx.createBuffer(1, maxLength, audioCtx.sampleRate);
     
@@ -1219,12 +1224,6 @@ document.addEventListener('DOMContentLoaded', function () {
             source.connect(looperGain); 
             source.start(time);
 
-            source.onstart = function() {
-                looperPlaying = true;
-            };
-            source.onended = function() {
-                looperPlaying = false;
-            };
         }
     }
 
@@ -1241,8 +1240,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } 
 
-        if (looperSamples.length > 0 && !looperPlaying) {
-            playCombinedBuffer(time);
+        if (looperSamples.length > 0) {
+            looperTime = looperTime % looperLength;
+            if (looperTime === 0) {
+                playCombinedBuffer(time);
+            }
+            looperTime += 1;
         }
     }
 
