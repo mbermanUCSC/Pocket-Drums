@@ -1171,7 +1171,10 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Find the longest sample duration to set as the length of the combined buffer
         const maxLength = looperSamples.reduce((max, buffer) => Math.max(max, buffer.length), 0);
-        looperLength = Math.ceil((maxLength / audioCtx.sampleRate) / (60 / bpm)/4);
+        const exactLengthInSeconds = maxLength / audioCtx.sampleRate;
+        const beatsPerSecond = bpm / (60*division);
+        const beatsPerLoop = exactLengthInSeconds * beatsPerSecond;
+        looperLength = Math.ceil(beatsPerLoop / division);
         // Create a mono buffer
         combinedBuffer = audioCtx.createBuffer(1, maxLength, audioCtx.sampleRate);
     
