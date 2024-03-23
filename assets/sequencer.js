@@ -25,7 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let waveform = 'sine';
     let keys = [];
     let touchSynth = false;
+    let touchTranspose = 0;
     let synthMode = 'weighted';
+
 
     let samplerSample = null;
     let sampleStart = 0;
@@ -444,6 +446,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 i += 1;
             });
+            // pick random kit
+            drumKit = Math.floor(Math.random() * 3);
+            document.getElementById('kit-select').selectedIndex = drumKit;
+            
         });
     });
     
@@ -733,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 resetActiveKeys()
                 this.classList.add('button-active');
                 const note = this.id;
-                playNote(note, audioCtx.currentTime);
+                playNote(note, audioCtx.currentTime, touchTranspose);
                 return;
             }
             // if key in keys, remove it
@@ -758,11 +764,18 @@ document.addEventListener('DOMContentLoaded', function () {
         touchSynth = this.checked;
         keys = [];
         resetActiveKeys();
-        // set the transpose buttons to opacity 0.5 if touch synth is checked, else 1
-        document.querySelectorAll('.transpose').forEach(button => {
-            button.style.opacity = this.checked ? '0.5' : '1';
-        });
+
         song = {};
+
+        touchTranspose = 0;
+        if (this.checked) {
+            document.querySelector('.transpose-key').textContent = touchTranspose;
+        }
+        else {
+            document.querySelector('.transpose-key').textContent = 'C';
+        }
+        
+        
     });
 
 
@@ -792,7 +805,17 @@ document.addEventListener('DOMContentLoaded', function () {
      document.querySelectorAll('.transpose').forEach(button => {
         button.addEventListener('click', function() {
             // if no selected keys, toggle all butons in c major
-            if (touchSynth) return;
+            if (touchSynth){
+                touchTranspose = this.id === 'up' ? touchTranspose + 1 : touchTranspose - 1;
+                if (touchTranspose > 5) {
+                    touchTranspose = 5;
+                }
+                if (touchTranspose <-3) {
+                    touchTranspose = -4;
+                }
+                document.querySelector('.transpose-key').textContent = touchTranspose;
+                return;
+            }
             if (keys.length === 0) {
                 keys = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
                 resetActiveKeys();
