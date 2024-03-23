@@ -1051,12 +1051,7 @@ document.addEventListener('DOMContentLoaded', function () {
             drawLooperWaveform(combinedBuffer);
         }
         else {
-            combinedBuffer = null;
-            const canvas = document.getElementById('looper-waveform');
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-            ctx.clearRect(0, 0, width, height);
+            killLooper();
         }
         
     });
@@ -1246,10 +1241,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (looperSamples.length > 0) {
             looperTime = looperTime % looperLength;
-            if (platform === 'mobile') {
-                playCombinedBuffer(time);
-                return;
-            }
+            //<p class="debug-info">0</p>
+            //set the debug info to the time and length
+            document.querySelector('.debug-info').textContent = looperTime + ' / ' + looperLength;
+            console.log("time", looperTime, "length", looperLength);
             if (looperTime === 0) {
                 playCombinedBuffer(time);
             }
