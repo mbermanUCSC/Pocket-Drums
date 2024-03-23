@@ -226,8 +226,10 @@
             <!-- two big buttons, record and undo  -->
             <canvas id="looper-waveform" width="800" height="100"></canvas>
             <section class="looper-control">
+                <button class="looper-button" id="solo">Solo</button>
                 <button class="looper-button" id="record">Rec</button>
                 <button class="looper-button" id="undo">Undo</button>
+                
             </section>
         </section>
     </section>
@@ -249,6 +251,10 @@
     <section class="volume-controls">
         <p>Sample</p>
         <input class="slider" type="range" id="sampler" value="80" min="0" max="80">
+    </section>
+    <section class="volume-controls">
+        <p>Looper</p>
+        <input class="slider" type="range" id="looper" value="80" min="0" max="80">
     </section>
 
 

@@ -68,7 +68,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const looperGain = audioCtx.createGain();
     looperGain.connect(masterGain); 
-    looperGain.gain.value = 0.18; 
+    looperGain.gain.value = 1.0; 
+
+    
 
 
     // Setup the destination for recording from the bus1 output
@@ -125,12 +127,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (sound) {
                 playSound(sound, nextNoteTime + swingDelay);
             }
-
-            if (currentBeat === 0) {
-                looperTrigger(nextNoteTime);
-            }
         });
-    
+        
+        if (currentBeat === 0) {
+            looperTrigger(nextNoteTime);
+        }
+
         // if there are keys selected, sequence synth
         if (keys.length > 0 && !touchSynth) {
             sequenceSynth(nextNoteTime);
@@ -217,119 +219,116 @@ document.addEventListener('DOMContentLoaded', function () {
         bpm = Number(bpmInput.value);
     });
 
-    // reset button
-    document.getElementById('reset').addEventListener('click', function() {
+    // Function to reset the sequencer
+    function resetSequencer() {
         sequences.forEach(sequence => {
             sequence.querySelectorAll('button').forEach(button => {
                 button.classList.remove('button-active');
             });
-            // clear bpm
-            if (!bpmLocked){
-                bpmInput.value = 120;
-            }
-            
-            // clear division
-            document.getElementById('division').checked = false;
-            division = 2;
+        });
+        document.getElementById('division').checked = false;
+        division = 2;
+        if (!bpmLocked) {
+            bpmInput.value = 120;
+        }
+    }
 
-            // clear any current sound in the buffer (dont close the audio context)
-            activeSources.forEach(source => {
-                source.stop();
-            });
-            activeSources = [];
+    // Function to reset the synth
+    function resetSynth() {
+        keys = [];
+        resetActiveKeys();
+        waveform = 'sine';
+        document.querySelectorAll('.waveform').forEach(button => {
+            button.style.opacity = '0.5';
+        });
+        document.getElementById('sine').style.opacity = '1';
+        document.getElementById('weighted-synth').checked = false;
+        synthMode = 'weighted';
+        document.getElementById('touch-synth').checked = false;
+        touchSynth = false;
+        document.querySelectorAll('.transpose').forEach(button => {
+            button.style.opacity = '1';
+        });
+        document.querySelector('.transpose-key').textContent = 'C';
+        song = {};
 
-            samples = {};
-            // clear the sample buttons
-            document.querySelectorAll('.add-sample-button').forEach(button => {
-                button.textContent = 'file';
-            });
+    }
 
-            // clear the synth keys
-            keys = [];
-            resetActiveKeys();
-
-            // clear the synth waveform
-            document.querySelectorAll('.waveform').forEach(button => {
-                button.style.opacity = '0.5';
-            });
-            document.getElementById('sine').style.opacity = '1';
-            waveform = 'sine';
-
-            // clear the swing
-            document.getElementById('swing').value = 0;
-            swingAmount = 0;
-
-            // reset all gains
-            masterGain.gain.value = 0.8;
-            synthGain.gain.value = 0.8;
-            drumGain.gain.value = 0.8;
-            samplerGain.gain.value = 0.8;
-            // reset gain sliders
-            document.getElementById('master').value = 80;
-            document.getElementById('synth').value = 80;
-            document.getElementById('drums').value = 80;
-
-            // reset song
-            song = {};
-
-            // reset the extra drums checkbox
-            document.getElementById('extra-drums').checked = false;
-            document.querySelector('.extra-drums').style.display = 'none';
-
-            // reset the kit select
-            document.getElementById('kit-select').selectedIndex = 0;
-            drumKit = 0;
-
-            // reset the synth mode
-            document.getElementById('weighted-synth').checked = false;
-            synthMode = 'weighted';
-
-            // reset the touch synth
-            document.getElementById('touch-synth').checked = false;
-            touchSynth = false;
-
-            // reset the transpose buttons
-            document.querySelectorAll('.transpose').forEach(button => {
-                button.style.opacity = '1';
-            });
-
-            // reset the transpose key
-            document.querySelector('.transpose-key').textContent = 'C';
-
-            // Stop recording
+    // Function to reset the sampler
+    function resetSampler() {
+        activeSources.forEach(source => {
+            source.stop();
+        });
+        activeSources = [];
+        samples = {};
+        document.querySelectorAll('.add-sample-button').forEach(button => {
+            button.textContent = 'file';
+        });
+        samplerSample = null;
+        sampleStart = 0;
+        sampleEnd = 1;
+        document.getElementById('sample-start').value = 0;
+        document.getElementById('sample-pitch').value = 0;
+        const canvas = document.getElementById('sample-waveform');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.querySelector('.sampler-file-txt').textContent = 'file';
+        
+        // reset recording
+        if (isRecording) {
             mediaRecorder.stop();
-            //mediaRecorder.stream.getTracks().forEach(track => track.stop()); // Stop the media stream
             isRecording = false;
             document.querySelector('.sampler-record').textContent = 'Rec';
+        }
+        // reset colors
+        document.querySelector('.sampler-record').style.backgroundColor = 'green';
 
-            activeSources.forEach(source => {
-                source.stop();
-            });
+    }
 
-            // reset the sampler
-            samplerSample = null;
-            sampleStart = 0;
-            sampleEnd = 1;
+    // Function to reset the looper
+    function resetLooper() {
+        killLooper();
+    }
 
-            // reset the sample waveform
-            const canvas = document.getElementById('sample-waveform');
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
+    // Function to reset volume controls
+    function resetVolumeControls() {
+        masterGain.gain.value = 0.8;
+        synthGain.gain.value = 0.8;
+        drumGain.gain.value = 0.8;
+        samplerGain.gain.value = 0.8;
+        looperGain.gain.value = 1.0;
+        document.getElementById('master').value = 80;
+        document.getElementById('synth').value = 80;
+        document.getElementById('drums').value = 80;
+        document.getElementById('sampler').value = 80;
+        document.getElementById('looper').value = 80;
+    }
 
-            ctx.clearRect(0, 0, width, height);
+    // Function to reset drum kits
+    function resetDrumKits() {
+        document.getElementById('extra-drums').checked = false;
+        document.querySelector('.extra-drums').style.display = 'none';
+        document.getElementById('kit-select').selectedIndex = 0;
+        drumKit = 0;
+    }
 
-            // reset the sample file text
-            document.querySelector('.sampler-file-txt').textContent = 'file';
-            document.getElementById('sample-start').value = 0;
-
-            // reset the pitch shift
-            document.getElementById('sample-pitch').value = 0;
-
-            // reset the looper
-            killLooper();
-        });
+    // Reset button event listener
+    document.getElementById('reset').addEventListener('click', function() {
+        resetSequencer();
+        resetSynth();
+        resetSampler();
+        resetLooper();
+        resetVolumeControls();
+        resetDrumKits();
+        // Stop any ongoing recording
+        if (isRecording) {
+            mediaRecorder.stop();
+            //mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            isRecording = false;
+            document.querySelector('.sampler-record').textContent = 'Rec';
+        }
     });
+
 
     // master volume control
     document.getElementById('master').addEventListener('input', function() {
@@ -353,6 +352,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('sampler').addEventListener('input', function() {
         const value = this.value;
         samplerGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
+    });
+
+    // looper volume control
+    document.getElementById('looper').addEventListener('input', function() {
+        const value = this.value;
+        looperGain.gain.value = value / 100; // Convert percentage to a value between 0 and 1
+        if (looperGain.gain.value === 0.8) {
+            looperGain.gain.value = 1.0;
+        }
     });
 
     // shuffle button
@@ -894,7 +902,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // sample trigger (play from start)
     // save it so we can stop it later
-    function samplerTrigger(time) {
+    function samplerTrigger(time, pitch=0) {
         if (!samplerSample) return;
 
         
@@ -907,7 +915,7 @@ document.addEventListener('DOMContentLoaded', function () {
         source.connect(samplerGain);
 
         const pitchShift = document.getElementById('sample-pitch').value;
-        source.detune.value = pitchShift * 100;
+        source.detune.value = (pitchShift * 100) + (pitch * 100);
 
         source.start(time, source.loopStart);
         source.stop(time + (source.loopEnd - source.loopStart));
@@ -973,6 +981,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         const audio = new Audio(audioUrl);
                         // Load the recording into the sampler
                         loadSampleIntoSampler(audioBlob);
+                        // reset so looper doesn't get this data too
+                        audioChunks = [];
+
                     };
                     mediaRecorder.start();
                 })
@@ -1013,24 +1024,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // LOOPER FUNCTIONS //
 
-    // <section class="looper">
-    //     <h2>Looper</h2>
-    //     <!-- two big buttons, record and undo  -->
-    //     <canvas id="looper-waveform" width="800" height="100"></canvas>
-    //     <section class="looper-control">
-    //         <button class="looper-button" id="record">Record</button>
-    //         <button class="looper-button" id="undo">Undo</button>
-    //     </section>
-        
-    // </section>
 
     // record button
     document.getElementById('record').addEventListener('click', function() {
         looperTriggered = !looperTriggered;
         this.textContent = looperTriggered ? 'Stop' : 'Rec';
-        // color to yellow if recording
+        // color to yellow if abt to record
         this.style.backgroundColor = looperTriggered ? 'yellow' : 'green';
     });
+
+    // on load set to green
+    document.getElementById('record').style.backgroundColor = 'green';
 
     // undo button
     document.getElementById('undo').addEventListener('click', function() {
@@ -1050,6 +1054,21 @@ document.addEventListener('DOMContentLoaded', function () {
             ctx.clearRect(0, 0, width, height);
         }
         
+    });
+
+    // solo button
+    document.getElementById('solo').addEventListener('click', function() {
+        console.log('solo');
+        // turn off every selected drum pad
+        sequences.forEach(sequence => {
+            sequence.querySelectorAll('button').forEach(button => {
+                button.classList.remove('button-active');
+            });
+        });
+
+        /// reset the keys
+        keys = [];
+        resetActiveKeys();
     });
 
     function killLooper() {
@@ -1090,6 +1109,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     //console.log("Recording started at", scheduledTime, "with actual context time", audioCtx.currentTime);
                     document.getElementById('record').textContent = 'Stop';
                     document.getElementById('record').style.backgroundColor = 'red';
+
+
                 }, delay * 1000); // Convert to milliseconds
             } else {
                 // If the scheduled time is in the past, start immediately
@@ -1137,27 +1158,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fileReader.readAsArrayBuffer(audioBlob);
     }
 
-    // Function to combine loops into a single buffer
-    // function combineLoops() {
-    //     // Assuming all buffers have the same sample rate and number of channels
-    //     const numberOfChannels = Math.min(...looperSamples.map(sample => sample.numberOfChannels));
-    //     const length = looperSamples.reduce((acc, sample) => acc + sample.length, 0);
-    //     combinedBuffer = audioCtx.createBuffer(numberOfChannels, length, audioCtx.sampleRate);
-
-
-    //     let offset = 0;
-    //     looperSamples.forEach(sample => {
-    //         for (let channel = 0; channel < numberOfChannels; channel++) {
-    //             // try to repeat the sample if it is shorter than the combined buffer
-    //             const source = sample.getChannelData(channel);
-    //             const destination = combinedBuffer.getChannelData(channel);
-    //             for (let i = 0; i < sample.length; i++) {
-    //                 destination[offset + i] += source[i];
-    //             }
-    //         }
-    //         offset += sample.length;
-    //     });
-    // }
 
     // Function to combine loops by stacking them into one waveform
     function combineLoops() {
@@ -1438,7 +1438,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (document.querySelector('.synth').style.display === 'block') {
                         playNoteFromMIDI(note);
                     }
-                    else {
+                    else if (document.querySelector('.sequencer').style.display === 'block') {
                         // c = kick, d = snare, e = hihat, f = tom
                         // disregard octave
                         const noteIndex = note % 12;
@@ -1464,6 +1464,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             playSound('bell', audioCtx.currentTime);
                         }
                     }
+                    else if (document.querySelector('.sampler').style.display === 'block') {
+                        samplerTrigger(audioCtx.currentTime, note);
+                    }
+                    // else if (document.querySelector('.looper').style.display === 'block') {
+                    //     looperTrigger(audioCtx.currentTime);
+                    // }
                 }
                 break;
             case 128: // note off
