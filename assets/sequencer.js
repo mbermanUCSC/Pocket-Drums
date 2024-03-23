@@ -46,6 +46,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
     let song = {};
 
+    // get user platform
+    // .platform deprecated
+    const platform = navigator.platform.toLowerCase();
+
     // Master gain for overall volume control
     const masterGain = audioCtx.createGain();
     masterGain.connect(audioCtx.destination);
@@ -1242,6 +1246,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (looperSamples.length > 0) {
             looperTime = looperTime % looperLength;
+            if (platform === 'mobile') {
+                playCombinedBuffer(time);
+                return;
+            }
             if (looperTime === 0) {
                 playCombinedBuffer(time);
             }
