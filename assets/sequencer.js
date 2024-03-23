@@ -45,6 +45,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let looperLength = 0;
     let looperTime = 0;
     let looperRecordingLength = 0;
+    let looperPitch = 1;
+
+    // MIDI
+    let activeOscillators = {};
+    let sustainPedalEngaged = false;
+    let sustainedNotes = [];
 
     let notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
     let song = {};
@@ -384,9 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
         sequences.forEach(sequence => {
             sequence.querySelectorAll('button').forEach(button => {
                 // if not sample pad, reset
-                if (!button.classList.contains('sample')) {
-                    button.classList.remove('button-active');
-                }
+                button.classList.remove('button-active');
             });
         });
 
@@ -432,14 +436,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 }
-                // and extra drums are checked
-                else if (button.classList.contains('tom') || document.getElementById('extra-drums').checked){
+                else if (button.classList.contains('tom')){
                     if (Math.random() > 1) {
                         button.classList.add('button-active');
                     }
                     // i % 2,4 != 0 
                     if (i % 2 !== 0 && i % 4 !== 0) {
                         if (Math.random() > 0.8) {
+                            button.classList.add('button-active');
+                        }
+                    }
+                }
+                else if (button.classList.contains('sample')) {
+                    if (samplerSample) {
+                        if (Math.random() > 0.9) {
                             button.classList.add('button-active');
                         }
                     }
@@ -474,6 +484,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.page-button').forEach(button => {
         button.addEventListener('click', function() {
             // get id of button
+            // stop all midi
+            for (let note in activeOscillators) {
+                activeOscillators[note].stop();
+            }
             const id = this.id;
             if (id === 'drum-icon') {
                 document.querySelector('.sequencer').style.display = 'block';
@@ -558,11 +572,17 @@ document.addEventListener('DOMContentLoaded', function () {
             input.accept = 'audio/*';
             input.onchange = e => {
                 const file = e.target.files[0];
+                // if file is over 10 seconds, alert the user
+                if (file.size > 10000000) {
+                    alert('File is too large. Please use a file under 10mb.');
+                    return;
+                }
                 currentButton.textContent = file.name;
                 const reader = new FileReader();
                 reader.onload = fileEvent => {
                     const arrayBuffer = fileEvent.target.result;
                     audioCtx.decodeAudioData(arrayBuffer, decodedData => {
+                        // if too large, alert the user
                         // Store the decoded buffer with the current drum type as the key
                         samples[currentDrumType] = decodedData;
                     }, error => {
@@ -624,7 +644,8 @@ document.addEventListener('DOMContentLoaded', function () {
         constructor(note, octave) {
             this.note = note;
             this.octave = octave;
-            this.weight = 1.0;
+            // random weight between 0 and 1
+            this.weight = Math.random();
         }
     }
 
@@ -862,11 +883,11 @@ document.addEventListener('DOMContentLoaded', function () {
         input.accept = 'audio/*';
         input.onchange = e => {
             const file = e.target.files[0];
-            // if file is too large, alert the user (max size for large audio files is 10mb)
-            if (file.size > 10000000) {
-                alert('File is too large. Please use a file under 10mb.');
-                return;
-            }
+            // if file is too large, trim it
+            // if (file.size > 10000000) {
+            //     alert('File is too large. Please use a file under 10mb.');
+            //     return;
+            // }
             const reader = new FileReader();
             reader.onload = fileEvent => {
                 const arrayBuffer = fileEvent.target.result;
@@ -1248,6 +1269,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (combinedBuffer) {
             const source = audioCtx.createBufferSource();
             source.buffer = combinedBuffer;
+            // pitch shift
+            source.playbackRate.value = looperPitch;
             source.connect(looperGain); 
             source.start(time);
 
@@ -1447,12 +1470,100 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
-    function playNoteFromMIDI(note) {
-        const noteIndex = note % 12;
-        const octave = Math.floor(note / 12) - 1;
-        const noteName = notes[noteIndex];
-        playNote(noteName, audioCtx.currentTime, octave);
+
+    // Adjusted playNote function to start notes
+    function playNoteMIDI(note, velocity) {
+        if (velocity === 0) {
+            stopNoteMIDI(note);
+            return;
+        }
+        
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+    
+        oscillator.connect(gainNode);
+        gainNode.connect(synthGain);
+    
+        oscillator.type = waveform;
+        oscillator.frequency.value = Math.pow(2, (note - 69) / 12) * 440;
+        gainNode.gain.value = velocity / 127;
+    
+        oscillator.start();
+    
+        // Keep a reference to the gainNode on the oscillator object
+        oscillator.gainNode = gainNode;
+    
+        if (activeOscillators[note]) {
+            // Stop the existing note before starting a new one on the same key
+            activeOscillators[note].stop();
+        }
+        activeOscillators[note] = oscillator;
+    
+        if (sustainPedalEngaged) {
+            sustainedNotes.push(note);
+        }
     }
+    
+
+    // Function to stop notes
+    // Function to stop notes with a smooth fade out to prevent clipping
+    function stopNoteMIDI(note) {
+        const oscillator = activeOscillators[note];
+        if (oscillator) {
+            const gainNode = oscillator.gainNode; // Assuming you have a reference to the gainNode on the oscillator object
+            const currentTime = audioCtx.currentTime;
+
+            // Ramp down the gain smoothly over 0.1 seconds to prevent clipping
+            gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1);
+
+            // Schedule the oscillator to stop after the gain has ramped down
+            oscillator.stop(currentTime + 0.11);
+
+            // Remove the oscillator from the active oscillators object
+            delete activeOscillators[note];
+
+            // If sustain pedal is engaged, also remove the note from sustainedNotes
+            if (sustainPedalEngaged) {
+                sustainedNotes = sustainedNotes.filter(sustainedNote => sustainedNote !== note);
+            }
+        }
+    }
+
+
+    // Function to handle sustain pedal events
+    function handleSustainPedal(value) {
+        sustainPedalEngaged = (value > 63); // MIDI convention: values >63 mean pedal down
+        if (!sustainPedalEngaged) {
+            // Release all sustained notes
+            while (sustainedNotes.length > 0) {
+                const note = sustainedNotes.pop();
+                stopNoteMIDI(note);
+            }
+        }
+    }
+
+    // Extend the MIDI message handling function to include sustain pedal control
+    function getMIDIMessage(midiMessage) {
+        const command = midiMessage.data[0];
+        const note = midiMessage.data[1];
+        const velocity = midiMessage.data[2]; // Some devices use velocity as 0 for note off
+        
+        switch (command) {
+            case 144: // note on
+                playNoteMIDI(note, velocity);
+                break;
+            case 128: // note off
+                stopNoteMIDI(note);
+                break;
+            case 176: // control change (e.g., sustain pedal)
+                if (note === 64) { // 64 is the standard CC number for sustain pedal
+                    handleSustainPedal(velocity);
+                }
+                break;
+        }
+    }
+
 
     // midi listener
     if (navigator.requestMIDIAccess) {
@@ -1471,58 +1582,68 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("Could not access your MIDI devices.");
     }
 
+
     function getMIDIMessage(midiMessage) {
-        const command = midiMessage.data[0];
-        const note = midiMessage.data[1] - 24; // subtract 24 to get the correct octave (-2)
-        const velocity = (midiMessage.data.length > 2) ? midiMessage.data[2] : 0;
+        const [command, note, velocity] = midiMessage.data;
+        const noteValue = note + 24; // Adjust note value if necessary
+    
         switch (command) {
-            case 144: // note on
+            case 144: // Note On
                 if (velocity > 0) {
-                    // if unfocused or audio context is suspended, disregard
-                    if (document.hidden || audioCtx.state === 'suspended') {
-                        return;
-                    }
-                    // if synth screen is active, play note
-                    if (document.querySelector('.synth').style.display === 'block') {
-                        playNoteFromMIDI(note);
-                    }
-                    else if (document.querySelector('.sequencer').style.display === 'block') {
-                        // c = kick, d = snare, e = hihat, f = tom
-                        // disregard octave
-                        const noteIndex = note % 12;
-                        const noteName = notes[noteIndex];
-                        if (noteName === 'c') {
-                            //play kick or sample at kick
-                            playSound('kick', audioCtx.currentTime);
-                        }
-                        else if (noteName === 'd') {
-                            //play snare or sample at snare
-                            playSound('snare', audioCtx.currentTime);
-                        }
-                        else if (noteName === 'e') {
-                            //play hihat or sample at hihat
-                            playSound('hihat', audioCtx.currentTime);
-                        }
-                        else if (noteName === 'f') {
-                            //play tom or sample at tom
-                            playSound('tom', audioCtx.currentTime);
-                        }
-                        else if (noteName === 'g') {
-                            //play bell or sample at bell
-                            playSound('bell', audioCtx.currentTime);
-                        }
-                    }
-                    else if (document.querySelector('.sampler').style.display === 'block') {
-                        samplerTrigger(audioCtx.currentTime, note);
-                    }
-                    // else if (document.querySelector('.looper').style.display === 'block') {
-                    //     looperTrigger(audioCtx.currentTime);
-                    // }
+                    noteOnActions(noteValue, velocity);
+                } else {
+                    noteOffActions(noteValue);
                 }
                 break;
-            case 128: // note off
+            case 128: // Note Off
+                noteOffActions(noteValue);
+                break;
+            case 176: // Control Change
+                if (note === 64) { // Sustain pedal CC number
+                    handleSustainPedal(velocity);
+                }
                 break;
         }
     }
+    
+    function noteOnActions(note, velocity) {
+        if (document.querySelector('.synth').style.display === 'block') {
+            // Synth screen active: play MIDI note
+            playNoteMIDI(note, velocity);
+        } else if (document.querySelector('.sequencer').style.display === 'block') {
+            const noteIndex = note % 12;
+            const noteName = notes[noteIndex];
+            if (noteName === 'c') {
+                //play kick or sample at kick
+                playSound('kick', audioCtx.currentTime);
+            }
+            else if (noteName === 'd') {
+                //play snare or sample at snare
+                playSound('snare', audioCtx.currentTime);
+            }
+            else if (noteName === 'e') {
+                //play hihat or sample at hihat
+                playSound('hihat', audioCtx.currentTime);
+            }
+            else if (noteName === 'f') {
+                //play tom or sample at tom
+                playSound('tom', audioCtx.currentTime);
+            }
+            else if (noteName === 'g') {
+                //play bell or sample at bell
+                playSound('bell', audioCtx.currentTime);
+            }
+        } else if (document.querySelector('.sampler').style.display === 'block') {
+            samplerTrigger(audioCtx.currentTime, note-60);
+        }
+    }
+    
+    function noteOffActions(note) {
+        if (document.querySelector('.synth').style.display === 'block') {
+            // Stop MIDI note if synth screen is active
+            stopNoteMIDI(note);
+        }
+    }
+
     
 });
