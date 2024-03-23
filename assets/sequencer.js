@@ -213,6 +213,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // set the text to ||
             playButton.textContent = '▶';
             stopSequencer();
+            // looper
+            looperTime = 0;
         } else {
             playButton.textContent = '||';
             startSequencer();
