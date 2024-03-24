@@ -128,8 +128,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // NOTE SCHEDULING FUNCTIONS //
 
     function scheduleNote() {
-        let noteScheduled = false;
-    
         sequences.forEach((seq, index) => {
             const soundButtons = seq.querySelectorAll('button');
             const sound = soundButtons[currentBeat].classList.contains('button-active') ? seq.dataset.sound : null;
@@ -142,30 +140,18 @@ document.addEventListener('DOMContentLoaded', function () {
     
             if (sound) {
                 playSound(sound, nextNoteTime + swingDelay);
-                noteScheduled = true;
             }
         });
-    
+        
         if (currentBeat === 0) {
             looperTrigger(nextNoteTime);
         }
-    
-        // Schedule synth notes
+
+        // if there are keys selected, sequence synth
         if (keys.length > 0 && !touchSynth) {
             sequenceSynth(nextNoteTime);
-            noteScheduled = true;
         }
     
-        // Always advance the sequencer
-        advanceSequencer();
-    
-        // If no note was scheduled, manually call scheduler to ensure it continues running
-        if (!noteScheduled) {
-            requestAnimationFrame(scheduler);
-        }
-    }
-    
-    function advanceSequencer() {
         updateCurrentBeatIndicator();
     
         // Do not add swing delay to nextNoteTime here, it's only applied when scheduling notes
@@ -173,7 +159,6 @@ document.addEventListener('DOMContentLoaded', function () {
         nextNoteTime += secondsPerBeat;
         currentBeat = (currentBeat + 1) % sequences[0].querySelectorAll('button').length;
     }
-    
     
 
     function scheduler() {
@@ -1659,6 +1644,8 @@ document.addEventListener('DOMContentLoaded', function () {
             stopNoteMIDI(note);
         }
     }
-
+    
+    // on program start, fake press the shuffle button
+    document.querySelector('.shuffle').click();
     
 });
