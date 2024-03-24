@@ -1652,6 +1652,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     // on program start, fake press the shuffle button
-    document.querySelector('.shuffle').click();
+    //document.querySelector('.shuffle').click();
     
 });
