@@ -128,43 +128,37 @@ document.addEventListener('DOMContentLoaded', function () {
     // NOTE SCHEDULING FUNCTIONS //
 
     function scheduleNote() {
-        let playScheduled = false;
         sequences.forEach((seq, index) => {
             const soundButtons = seq.querySelectorAll('button');
             const sound = soundButtons[currentBeat].classList.contains('button-active') ? seq.dataset.sound : null;
-        
+    
+            // Calculate swing delay
             let swingDelay = 0;
             if (currentBeat % 2 !== 0) { // Apply swing to every second beat
                 swingDelay = (60.0 / bpm / division) * swingAmount;
             }
-        
+    
             if (sound) {
                 playSound(sound, nextNoteTime + swingDelay);
-                playScheduled = true;
             }
         });
         
         if (currentBeat === 0) {
             looperTrigger(nextNoteTime);
         }
-    
+
+        // if there are keys selected, sequence synth
         if (keys.length > 0 && !touchSynth) {
             sequenceSynth(nextNoteTime);
-            playScheduled = true;
         }
-        
+    
         updateCurrentBeatIndicator();
-        
-        // Always advance the beat
-        nextNoteTime += 60.0 / bpm / division;
+    
+        // Do not add swing delay to nextNoteTime here, it's only applied when scheduling notes
+        const secondsPerBeat = 60.0 / bpm / division;
+        nextNoteTime += secondsPerBeat;
         currentBeat = (currentBeat + 1) % sequences[0].querySelectorAll('button').length;
-    
-        // Ensure the scheduler is called again even if no sound was scheduled
-        if (!playScheduled) {
-            requestAnimationFrame(scheduler);
-        }
     }
-    
     
 
     function scheduler() {
@@ -222,18 +216,43 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     // play/pause button
-    playButton.addEventListener('click', function() {
-        if (isPlaying) {
-            // set the text to ||
-            playButton.textContent = '▶';
-            stopSequencer();
-            // looper
-            looperTime = 0;
-        } else {
-            playButton.textContent = '||';
-            startSequencer();
+    // playButton.addEventListener('click', function() {
+    //     if (isPlaying) {
+    //         // set the text to ||
+    //         playButton.textContent = '▶';
+    //         stopSequencer();
+    //         // looper
+    //         looperTime = 0;
+    //     } else {
+    //         playButton.textContent = '||';
+    //         startSequencer();
+    //     }
+    // });
+
+    playButton.addEventListener('click', async function() {
+    // Check if the AudioContext is in a suspended state and attempt to resume it
+    if (audioCtx.state === 'suspended') {
+        try {
+            await audioCtx.resume();
+            console.log('AudioContext resumed successfully');
+        } catch (error) {
+            console.error('Error resuming AudioContext:', error);
+            return; // Exit if AudioContext cannot be resumed, as further audio actions would fail
         }
-    });
+    }
+
+    // Toggle playback state
+    if (isPlaying) {
+        playButton.textContent = '▶';
+        stopSequencer();
+        // looper
+        looperTime = 0;
+    } else {
+        playButton.textContent = '||';
+        startSequencer();
+    }
+});
+
 
     // bpm input
     bpmInput.addEventListener('input', function() {
