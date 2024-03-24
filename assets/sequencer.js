@@ -192,6 +192,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // SEQUENCER CONTROLS //
 
     function startSequencer() {
+        // if audio context is suspended, resume it
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
         if (!isPlaying) {
             isPlaying = true;
             currentBeat = 0;
