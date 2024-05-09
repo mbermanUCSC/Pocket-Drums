@@ -5,7 +5,7 @@
 
 ## Introduction
 
-This is a simple, real-time audio sequencer developed in JavaScript, designed to run directly in web browsers. It enables users to create simple drum patterns with the combination of kicks, snares, hi-hats, and toms, and can also accept sample audio files.
+This is a simple, real-time audio sequencer developed in JavaScript, designed to run directly in web browsers. It enables users to create drum patterns with the combination of kicks, snares, hi-hats, and toms, and can also accept sample audio files. There is a synthesizer with an accompanied algoryhtm to generate chords, melodies, and basslines. Also included is a sampler and looper, which adds recording to the sequencer; both internally and for outside sources.
 ## Implementation
 
 The synth was originally developed to meet specific criteria:
