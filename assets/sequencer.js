@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     synthGain.connect(bus1);
     drumGain.connect(bus1);
-    samplerGain.connect(bus1);
+    samplerGain.connect(masterGain);
 
     synthGain.gain.value = 0.8;
     drumGain.gain.value = 0.8;
@@ -83,8 +83,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const looperGain = audioCtx.createGain();
     looperGain.connect(masterGain); 
     looperGain.gain.value = 1.0; 
-
-    
 
 
     // Setup the destination for recording from the bus1 output
