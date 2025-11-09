@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const samplerGain = audioCtx.createGain();
 
     synthGain.connect(bus1);
-    drumGain.connect(bus1);
-    samplerGain.connect(masterGain);
+    drumGain.connect(masterGain);
+    samplerGain.connect(bus1);
 
     synthGain.gain.value = 0.8;
     drumGain.gain.value = 0.8;
